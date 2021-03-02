@@ -5,17 +5,18 @@
     <parent>
         <groupId>org.pousse-cafe-framework</groupId>
         <artifactId>pousse-cafe</artifactId>
-        <version>0.28.0-SNAPSHOT</version>
+        <version>0.28.0</version>
     </parent>
 
     <artifactId>pousse-cafe-doc</artifactId>
     <name>Pousse-Café - Doc</name>
+    <version>0.28.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
             <groupId>org.pousse-cafe-framework</groupId>
             <artifactId>pousse-cafe-source</artifactId>
-            <version>0.28.0-SNAPSHOT</version>
+            <version>0.28.0</version>
         </dependency>
         <dependency>
             <groupId>org.pousse-cafe-framework</groupId>
