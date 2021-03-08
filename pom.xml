@@ -10,6 +10,7 @@
 
     <artifactId>pousse-cafe-doc</artifactId>
     <name>Pousse-Café - Doc</name>
+    <version>0.29.0-SNAPSHOT</version>
 
     <dependencies>
         <dependency>
