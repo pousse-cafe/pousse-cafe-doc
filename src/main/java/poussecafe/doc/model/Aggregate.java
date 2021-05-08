@@ -3,10 +3,7 @@ package poussecafe.doc.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import poussecafe.doc.model.aggregatedoc.AggregateDoc;
-import poussecafe.doc.model.entitydoc.EntityDoc;
-import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
-import poussecafe.doc.model.vodoc.ValueObjectDoc;
+import poussecafe.doc.DocumentationItem;
 
 public class Aggregate {
 
@@ -14,22 +11,22 @@ public class Aggregate {
 
         private Aggregate aggregate = new Aggregate();
 
-        public Builder documentation(AggregateDoc documentation) {
+        public Builder documentation(DocumentationItem documentation) {
             aggregate.documentation = documentation;
             return this;
         }
 
-        public Builder entities(List<EntityDoc> entities) {
+        public Builder entities(List<DocumentationItem> entities) {
             aggregate.entities = new ArrayList<>(entities);
             return this;
         }
 
-        public Builder valueObjects(List<ValueObjectDoc> valueObjects) {
+        public Builder valueObjects(List<DocumentationItem> valueObjects) {
             aggregate.valueObjects = new ArrayList<>(valueObjects);
             return this;
         }
 
-        public Builder processSteps(List<ProcessStepDoc> processSteps) {
+        public Builder processSteps(List<DocumentationItem> processSteps) {
             aggregate.processSteps = new ArrayList<>(processSteps);
             return this;
         }
@@ -47,27 +44,27 @@ public class Aggregate {
 
     }
 
-    private AggregateDoc documentation;
+    private DocumentationItem documentation;
 
-    public AggregateDoc documentation() {
+    public DocumentationItem documentation() {
         return documentation;
     }
 
-    private List<EntityDoc> entities;
+    private List<DocumentationItem> entities;
 
-    public List<EntityDoc> entities() {
+    public List<DocumentationItem> entities() {
         return entities;
     }
 
-    private List<ValueObjectDoc> valueObjects;
+    private List<DocumentationItem> valueObjects;
 
-    public List<ValueObjectDoc> valueObjects() {
+    public List<DocumentationItem> valueObjects() {
         return valueObjects;
     }
 
-    private List<ProcessStepDoc> processSteps;
+    private List<DocumentationItem> processSteps;
 
-    public List<ProcessStepDoc> processSteps() {
+    public List<DocumentationItem> processSteps() {
         return processSteps;
     }
 }

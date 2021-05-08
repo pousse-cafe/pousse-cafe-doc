@@ -1,7 +1,10 @@
 package poussecafe.doc.model;
 
+import java.util.Optional;
 import javax.lang.model.element.Element;
+import poussecafe.doc.annotations.AnnotationUtils;
 import poussecafe.domain.Service;
+import poussecafe.source.Trivial;
 
 public class ComponentDocFactory implements Service {
 
@@ -9,9 +12,19 @@ public class ComponentDocFactory implements Service {
         return new ComponentDoc.Builder()
                 .name(name)
                 .description(annotationsResolver.renderCommentBody(doc))
-                .shortDescription(annotationsResolver.shortDescription(doc))
-                .trivial(annotationsResolver.isTrivial(doc))
+                .shortDescription(shortDescription(doc))
+                .trivial(annotationsResolver.isTrivial(doc)
+                        || AnnotationUtils.annotation(doc, Trivial.class).isPresent())
                 .build();
+    }
+
+    private Optional<String> shortDescription(Element doc) {
+        var shortAnnotation = AnnotationUtils.annotation(doc, poussecafe.source.ShortDescription.class);
+        if(shortAnnotation.isPresent()) {
+            return Optional.of((String) AnnotationUtils.value(shortAnnotation.orElseThrow(), "value").orElseThrow().getValue());
+        } else {
+            return annotationsResolver.shortDescription(doc);
+        }
     }
 
     private AnnotationsResolver annotationsResolver;

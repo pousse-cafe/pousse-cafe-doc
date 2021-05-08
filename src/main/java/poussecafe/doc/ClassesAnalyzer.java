@@ -5,8 +5,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import javax.lang.model.element.TypeElement;
+import poussecafe.doc.annotations.AnnotationUtils;
 import poussecafe.doc.model.AnnotationsResolver;
 import poussecafe.doc.model.DocletAccess;
+import poussecafe.source.Ignore;
 
 public class ClassesAnalyzer {
 
@@ -33,7 +35,8 @@ public class ClassesAnalyzer {
 
     public void analyzeCode() {
         for (TypeElement classDoc : docletAccess.typeElements()) {
-            if (!annotationsResolver.isIgnored(classDoc)) {
+            if (!annotationsResolver.isIgnored(classDoc)
+                    && AnnotationUtils.annotation(classDoc, Ignore.class).isEmpty()) {
                 processClassDoc(classDoc);
             }
         }

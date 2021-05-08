@@ -10,30 +10,19 @@ import java.util.Date;
 import java.util.HashMap;
 import org.apache.commons.io.IOUtils;
 import poussecafe.doc.model.Aggregate;
-import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.Domain;
-import poussecafe.doc.model.DomainFactory;
 import poussecafe.doc.model.DomainProcessSteps;
 import poussecafe.doc.model.DomainProcessStepsFactory;
 import poussecafe.doc.model.Module;
-import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.UbiquitousLanguageEntry;
 import poussecafe.doc.model.UbiquitousLanguageFactory;
-import poussecafe.doc.model.aggregatedoc.AggregateDoc;
-import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
-import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
 import poussecafe.doc.model.domainprocessdoc.Step;
-import poussecafe.doc.model.entitydoc.EntityDoc;
-import poussecafe.doc.model.moduledoc.ModuleDoc;
-import poussecafe.doc.model.servicedoc.ServiceDoc;
-import poussecafe.doc.model.servicedoc.ServiceDocRepository;
-import poussecafe.doc.model.vodoc.ValueObjectDoc;
 
 import static java.util.stream.Collectors.toList;
 
 public class HtmlWriter {
 
-    public void writeHtml() {
+    public void writeHtml(Domain domain) {
         try(FileWriter stream = new FileWriter(new File(configuration.outputDirectory(), "index.html"))) {
             copyCss();
 
@@ -41,7 +30,6 @@ public class HtmlWriter {
             freemarkerConfig.setClassForTemplateLoading(getClass(), "/");
             Template template = freemarkerConfig.getTemplate("index.html");
 
-            Domain domain = domainFactory.buildDomain();
             HashMap<String, Object> domainMap = new HashMap<>();
             domainMap.put("name", domain.name());
             domainMap.put("version", domain.version());
@@ -51,7 +39,7 @@ public class HtmlWriter {
                                     .stream()
                                     .filter(module -> !module.isEmpty())
                                     .sorted(this::compareModules)
-                                    .map(this::adapt)
+                                    .map(item -> adapt(item, domain))
                                     .collect(toList()));
 
             HashMap<String, Object> model = new HashMap<>();
@@ -62,7 +50,7 @@ public class HtmlWriter {
                             ubitquitousLanguageFactory
                                     .buildUbiquitousLanguage(domain)
                                     .stream()
-                                    .filter(doc -> !doc.componentDoc().trivial())
+                                    .filter(doc -> !doc.componentDoc().description().trivial())
                                     .map(this::adapt)
                                     .collect(toList()));
             template.process(model, stream);
@@ -73,140 +61,98 @@ public class HtmlWriter {
 
     private PousseCafeDocletConfiguration configuration;
 
-    private DomainFactory domainFactory;
-
     private int compareModules(Module moduleDoc1, Module moduleDoc2) {
-        ComponentDoc doc1 = moduleDoc1.documentation().attributes().componentDoc().value();
-        ComponentDoc doc2 = moduleDoc2.documentation().attributes().componentDoc().value();
+        DocumentationItem doc1 = moduleDoc1.documentation();
+        DocumentationItem doc2 = moduleDoc2.documentation();
         return compareTo(doc1, doc2);
     }
 
-    private int compareTo(ComponentDoc componentDoc1,
-            ComponentDoc componentDoc2) {
+    private int compareTo(DocumentationItem componentDoc1,
+            DocumentationItem componentDoc2) {
         return componentDoc1.name().compareTo(componentDoc2.name());
     }
 
-    private HashMap<String, Object> adapt(Module module) {
+    private HashMap<String, Object> adapt(Module module, Domain domain) {
         HashMap<String, Object> view = new HashMap<>();
-        ModuleDoc moduleDoc = module.documentation();
+        DocumentationItem moduleDoc = module.documentation();
         view.put("id", moduleDoc.id());
-        view.put("name", moduleDoc.attributes().componentDoc().value().name());
-        view.put("description", moduleDoc.attributes().componentDoc().value().description());
+        view.put("name", moduleDoc.name());
+        view.put("description", moduleDoc.description().description().orElse(""));
 
         view.put("aggregates", module.aggregates()
                 .stream()
-                .filter(aggregate -> !aggregate.documentation().attributes().moduleComponentDoc().value().componentDoc().trivial())
+                .filter(aggregate -> !aggregate.documentation().description().trivial())
                 .sorted(this::compareAggregates)
                 .map(this::adapt)
                 .collect(toList()));
 
-        view.put("services", serviceDocRepository
-                .findByModuleId(moduleDoc.attributes().identifier().value())
+        view.put("services", module.services()
                 .stream()
-                .filter(doc -> !doc.attributes().moduleComponentDoc().value().componentDoc().trivial())
-                .sorted(this::compareServices)
+                .filter(doc -> !doc.description().trivial())
+                .sorted(this::compareTo)
                 .map(this::adapt)
                 .collect(toList()));
 
-        view.put("domainProcesses", domainProcessDocRepository
-                .findByModuleId(moduleDoc.attributes().identifier().value())
+        view.put("domainProcesses", module.processes()
                 .stream()
-                .filter(doc -> !doc.attributes().moduleComponentDoc().value().componentDoc().trivial())
-                .sorted(this::compareDomainProcesses)
-                .map(this::adapt)
+                .filter(doc -> !doc.description().trivial())
+                .sorted(this::compareTo)
+                .map(item -> adaptDomainProcess(item, domain))
                 .collect(toList()));
 
         return view;
     }
 
     private int compareAggregates(Aggregate aggregateDoc1, Aggregate aggregateDoc2) {
-        ModuleComponentDoc doc1 = aggregateDoc1.documentation().attributes().moduleComponentDoc().value();
-        ModuleComponentDoc doc2 = aggregateDoc2.documentation().attributes().moduleComponentDoc().value();
+        var doc1 = aggregateDoc1.documentation();
+        var doc2 = aggregateDoc2.documentation();
         return compareTo(doc1, doc2);
-    }
-
-    private int compareTo(ModuleComponentDoc moduleComponentDoc1,
-            ModuleComponentDoc moduleComponentDoc2) {
-        return compareTo(moduleComponentDoc1.componentDoc(), moduleComponentDoc2.componentDoc());
     }
 
     private HashMap<String, Object> adapt(Aggregate aggregate) {
         HashMap<String, Object> view = new HashMap<>();
-        AggregateDoc aggregateDoc = aggregate.documentation();
+        var aggregateDoc = aggregate.documentation();
         view.put("id", aggregateDoc.id());
-        view.put("name", aggregateDoc.attributes().moduleComponentDoc().value().componentDoc().name());
-        view.put("description", aggregateDoc.attributes().moduleComponentDoc().value().componentDoc().description());
+        view.put("name", aggregateDoc.name());
+        view.put("description", aggregateDoc.description().description().orElse(""));
 
         view.put("entities", aggregate.entities().stream()
-                .filter(doc -> !doc.attributes().moduleComponentDoc().value().componentDoc().trivial())
-                .sorted(this::compareEntities)
+                .filter(doc -> !doc.description().trivial())
+                .sorted(this::compareTo)
                 .map(this::adapt)
                 .collect(toList()));
 
         view.put("valueObjects", aggregate.valueObjects().stream()
-                .filter(doc -> !doc.attributes().moduleComponentDoc().value().componentDoc().trivial())
-                .sorted(this::compareValueObjects)
+                .filter(doc -> !doc.description().trivial())
+                .sorted(this::compareTo)
                 .map(this::adapt)
                 .collect(toList()));
 
         return view;
     }
 
-    private ServiceDocRepository serviceDocRepository;
-
-    private int compareServices(ServiceDoc serviceDoc1, ServiceDoc serviceDoc2) {
-        return compareTo(serviceDoc1.attributes().moduleComponentDoc().value(), serviceDoc2.attributes().moduleComponentDoc().value());
-    }
-
-    private DomainProcessDocRepository domainProcessDocRepository;
-
-    private int compareDomainProcesses(DomainProcessDoc moduleDoc1, DomainProcessDoc moduleDoc2) {
-        return compareTo(moduleDoc1.attributes().moduleComponentDoc().value(), moduleDoc2.attributes().moduleComponentDoc().value());
-    }
-
-    private int compareEntities(EntityDoc entityDoc1, EntityDoc entityDoc2) {
-        return compareTo(entityDoc1.attributes().moduleComponentDoc().value(), entityDoc2.attributes().moduleComponentDoc().value());
-    }
-
-    private HashMap<String, Object> adapt(EntityDoc entityDoc) {
-        HashMap<String, Object> view = new HashMap<>();
-        view.put("id", entityDoc.id());
-        view.put("name", entityDoc.attributes().moduleComponentDoc().value().componentDoc().name());
-        view.put("description", entityDoc.attributes().moduleComponentDoc().value().componentDoc().description());
-        return view;
-    }
-
-    private int compareValueObjects(ValueObjectDoc valueObjectDoc1, ValueObjectDoc valueObjectDoc2) {
-        return compareTo(valueObjectDoc1.attributes().moduleComponentDoc().value(), valueObjectDoc2.attributes().moduleComponentDoc().value());
-    }
-
-    private HashMap<String, Object> adapt(ValueObjectDoc entityDoc) {
-        HashMap<String, Object> view = new HashMap<>();
-        view.put("id", entityDoc.id());
-        view.put("name", entityDoc.attributes().moduleComponentDoc().value().componentDoc().name());
-        view.put("description", entityDoc.attributes().moduleComponentDoc().value().componentDoc().description());
-        return view;
-    }
-
-    private HashMap<String, Object> adapt(ServiceDoc serviceDoc) {
+    private HashMap<String, Object> adapt(DocumentationItem serviceDoc) {
         HashMap<String, Object> view = new HashMap<>();
         view.put("id", serviceDoc.id());
-        view.put("name", serviceDoc.attributes().moduleComponentDoc().value().componentDoc().name());
-        view.put("description", serviceDoc.attributes().moduleComponentDoc().value().componentDoc().description());
+        view.put("name", serviceDoc.name());
+        view.put("description", serviceDoc.description().description().orElse(""));
         return view;
     }
 
-    private HashMap<String, Object> adapt(DomainProcessDoc domainProcessDoc) {
+    private HashMap<String, Object> adaptDomainProcess(DocumentationItem domainProcessDoc, Domain domain) {
         HashMap<String, Object> view = new HashMap<>();
         view.put("id", domainProcessDoc.id());
-        view.put("name", domainProcessDoc.attributes().moduleComponentDoc().value().componentDoc().name());
-        view.put("description", domainProcessDoc.attributes().moduleComponentDoc().value().componentDoc().description());
-        DomainProcessSteps domainProcessSteps = domainProcessStepsFactory.buildDomainProcessSteps(domainProcessDoc);
+        view.put("name", domainProcessDoc.name());
+        view.put("description", domainProcessDoc.description().description().orElse(""));
+
+        DomainProcessSteps domainProcessSteps = domainProcessStepsFactory.buildDomainProcessSteps(domainProcessDoc,
+                domain);
         view.put("steps", domainProcessSteps.orderedSteps().stream()
-                .filter(step -> !step.componentDoc().trivial())
+                .filter(step -> !step.componentDoc().description().trivial())
                 .filter(step -> !step.external())
                 .map(this::adapt)
                 .collect(toList()));
+
         return view;
     }
 
@@ -215,7 +161,7 @@ public class HtmlWriter {
     private HashMap<String, Object> adapt(Step step) {
         HashMap<String, Object> view = new HashMap<>();
         view.put("name", step.componentDoc().name());
-        view.put("description", step.componentDoc().description());
+        view.put("description", step.componentDoc().description().description().orElse(""));
         return view;
     }
 

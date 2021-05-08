@@ -32,4 +32,8 @@ extends AggregateRepository<ProcessStepDocId, ProcessStepDoc, ProcessStepDoc.Att
     public List<ProcessStepDoc> findByAggregateDocId(AggregateDocId aggregateDocId) {
         return wrap(dataAccess().findByAggregateDocId(aggregateDocId));
     }
+
+    public List<ProcessStepDoc> findByModule(ModuleDocId moduleDocId) {
+        return wrap(dataAccess().findByModule(moduleDocId));
+    }
 }

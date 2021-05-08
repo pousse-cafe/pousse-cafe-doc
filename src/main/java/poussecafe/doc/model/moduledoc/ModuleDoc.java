@@ -1,11 +1,14 @@
 package poussecafe.doc.model.moduledoc;
 
 import poussecafe.attribute.Attribute;
+import poussecafe.attribute.OptionalAttribute;
 import poussecafe.discovery.Aggregate;
+import poussecafe.doc.DocumentationItem;
 import poussecafe.doc.StringNormalizer;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.domain.AggregateRoot;
 import poussecafe.domain.EntityAttributes;
+import poussecafe.source.analysis.ClassName;
 
 @Aggregate(
     factory = ModuleDocFactory.class,
@@ -25,8 +28,18 @@ public class ModuleDoc extends AggregateRoot<ModuleDocId, ModuleDoc.Attributes> 
         return StringNormalizer.normalizeString(attributes().componentDoc().value().name());
     }
 
+    public DocumentationItem toDocumentationItem() {
+        return attributes().componentDoc().value().documentationItemBuilder()
+                .id(id())
+                .moduleName(attributes().componentDoc().value().name())
+                .className(attributes().className().value().map(ClassName::new))
+                .build();
+    }
+
     public static interface Attributes extends EntityAttributes<ModuleDocId> {
 
         Attribute<ComponentDoc> componentDoc();
+
+        OptionalAttribute<String> className();
     }
 }

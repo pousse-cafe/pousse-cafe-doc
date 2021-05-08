@@ -52,4 +52,11 @@ public class InternalProcessStepDocDataAccess extends InternalDataAccess<Process
                 .filter(data -> data.aggregate().value().get().equals(aggregateDocId))
                 .collect(toList());
     }
+
+    @Override
+    public List<ProcessStepDocData> findByModule(ModuleDocId moduleDocId) {
+        return findAll().stream()
+                .filter(data -> data.moduleComponentDoc().value().moduleDocId().equals(moduleDocId))
+                .collect(toList());
+    }
 }

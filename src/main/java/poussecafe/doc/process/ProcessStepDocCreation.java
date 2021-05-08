@@ -40,6 +40,7 @@ public class ProcessStepDocCreation extends DomainProcess {
                 Optional<AggregateDocId> aggregate = doc.attributes().aggregate().value();
                 if(aggregate.isPresent()) {
                     processStepDoc.attributes().aggregate().valueOf(doc.attributes().aggregate());
+                    processStepDoc.attributes().aggregateName().valueOf(doc.attributes().aggregateName());
                 }
 
                 processStepRepository.update(processStepDoc);

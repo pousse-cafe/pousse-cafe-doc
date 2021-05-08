@@ -17,6 +17,7 @@ import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocRepository;
 import poussecafe.doc.process.AggregateDocCreation;
 import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.AggregateRepository;
@@ -41,8 +42,10 @@ public class AggregateDocFactory extends AggregateFactory<AggregateDocId, Aggreg
 
         String name = name(aggregateClassDoc);
         ModuleDocId moduleDocId = command.moduleId().value();
+        String moduleName = moduleDocRepository.get(moduleDocId).attributes().componentDoc().value().name();
         aggregateDoc.attributes().moduleComponentDoc().value(new ModuleComponentDoc.Builder()
                 .moduleDocId(moduleDocId)
+                .moduleName(moduleName)
                 .componentDoc(componentDocFactory.buildDoc(name, aggregateClassDoc))
                 .build());
 
@@ -57,6 +60,8 @@ public class AggregateDocFactory extends AggregateFactory<AggregateDocId, Aggreg
     }
 
     private ClassDocRepository classDocRepository;
+
+    private ModuleDocRepository moduleDocRepository;
 
     private String name(TypeElement aggregateClassDoc) {
         var simpleClassName = aggregateClassDoc.getSimpleName().toString();

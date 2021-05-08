@@ -1,5 +1,6 @@
 package poussecafe.doc.model.moduledoc;
 
+import java.util.Optional;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import poussecafe.doc.ClassDocPredicates;
@@ -51,6 +52,7 @@ public class ModuleDocFactory extends AggregateFactory<ModuleDocId, ModuleDoc, M
         PackageElement packageElement = (PackageElement) doc.getEnclosingElement();
         ModuleDoc moduleDoc = newAggregateWithId(moduleDocId(packageElement));
         moduleDoc.componentDoc(componentDocFactory.buildDoc(name, doc));
+        moduleDoc.attributes().className().value(Optional.of(doc.getQualifiedName().toString()));
         return moduleDoc;
     }
 

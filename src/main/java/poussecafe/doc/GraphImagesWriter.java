@@ -2,14 +2,10 @@ package poussecafe.doc;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import poussecafe.doc.model.Aggregate;
+import poussecafe.doc.model.Domain;
 import poussecafe.doc.model.GraphFactory;
-import poussecafe.doc.model.aggregatedoc.AggregateDoc;
-import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
-import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
-import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
-import poussecafe.doc.model.moduledoc.ModuleDoc;
-import poussecafe.doc.model.moduledoc.ModuleDocRepository;
+import poussecafe.doc.model.Module;
 
 public class GraphImagesWriter {
 
@@ -25,18 +21,17 @@ public class GraphImagesWriter {
 
     private PousseCafeDocletConfiguration configuration;
 
-    public void writeImages() {
+    public void writeImages(Domain domain) {
         try {
             File outputDirectory = outputDirectory();
-            List<ModuleDoc> moduleDocs = moduleDocRepository.findAll();
-            for (ModuleDoc moduleDoc : moduleDocs) {
-                Logger.debug("Drawing BC " + moduleDoc.attributes().componentDoc().value().name() + " graph...");
+            for (Module moduleDoc : domain.modules()) {
+                Logger.debug("Drawing BC " + moduleDoc.documentation().name() + " graph...");
                 graphImageWriter
-                        .writeImage(graphFactory.buildModuleGraph(moduleDoc), outputDirectory,
-                                moduleDoc.id());
+                        .writeImage(graphFactory.buildModuleGraph(moduleDoc, domain), outputDirectory,
+                                moduleDoc.documentation().id());
 
-                writeAggregatesGraphs(moduleDoc);
-                writeDomainProcessesGraphs(moduleDoc);
+                writeAggregatesGraphs(moduleDoc, domain);
+                writeDomainProcessesGraphs(moduleDoc, domain);
             }
         } catch (IOException e) {
             throw new RuntimeException("Error while writing graphs", e);
@@ -51,40 +46,34 @@ public class GraphImagesWriter {
 
     private GraphImageWriter graphImageWriter;
 
-    private void writeAggregatesGraphs(ModuleDoc moduleDoc) throws IOException {
+    private void writeAggregatesGraphs(Module module, Domain domain) throws IOException {
         File outputDirectory = outputDirectory();
-        for (AggregateDoc aggregateDoc : aggregateDocRepository
-                .findByModule(moduleDoc.attributes().identifier().value())) {
-            Logger.debug("Drawing aggregate " + aggregateDoc.attributes().moduleComponentDoc().value().componentDoc().name() + " graph...");
+        for (Aggregate aggregate : module.aggregates()) {
+            var aggregateDoc = aggregate.documentation();
+            Logger.debug("Drawing aggregate " + aggregateDoc.name() + " graph...");
 
-            String aggregateGraphBaseName = moduleDoc.id() + "_" + aggregateDoc.id();
-            graphImageWriter.writeImage(graphFactory.buildAggregateGraph(aggregateDoc), outputDirectory,
+            String aggregateGraphBaseName = module.documentation().id() + "_" + aggregateDoc.id();
+            graphImageWriter.writeImage(graphFactory.buildAggregateGraph(aggregate, domain), outputDirectory,
                     aggregateGraphBaseName);
 
-            String aggregateGraphEventsBaseName = moduleDoc.id() + "_" + aggregateDoc.id() + "_events";
-            graphImageWriter.writeImage(aggregateEventsGraphFactory.buildGraph(aggregateDoc), outputDirectory,
+            String aggregateGraphEventsBaseName = module.documentation().id() + "_" + aggregateDoc.id() + "_events";
+            graphImageWriter.writeImage(aggregateEventsGraphFactory.buildGraph(aggregate, domain), outputDirectory,
                     aggregateGraphEventsBaseName);
         }
     }
-
-    private ModuleDocRepository moduleDocRepository;
-
-    private AggregateDocRepository aggregateDocRepository;
 
     private GraphFactory graphFactory;
 
     private AggregateEventsGraphFactory aggregateEventsGraphFactory;
 
-    private void writeDomainProcessesGraphs(ModuleDoc moduleDoc) throws IOException {
+    private void writeDomainProcessesGraphs(Module module, Domain domain) throws IOException {
         File outputDirectory = outputDirectory();
-        for (DomainProcessDoc domainProcessDoc : domainProcessDocRepository
-                .findByModuleId(moduleDoc.attributes().identifier().value())) {
-            Logger.debug("Drawing domain process " + domainProcessDoc.attributes().moduleComponentDoc().value().componentDoc().name() + " graph...");
-            graphImageWriter
-                    .writeImage(graphFactory.buildDomainProcessGraph(domainProcessDoc), outputDirectory,
-                            moduleDoc.id() + "_" + domainProcessDoc.id());
+        for (DocumentationItem domainProcessDoc : module.processes()) {
+            Logger.debug("Drawing domain process " + domainProcessDoc.name() + " graph...");
+            graphImageWriter.writeImage(
+                    graphFactory.buildDomainProcessGraph(domainProcessDoc, domain),
+                    outputDirectory,
+                    module.documentation().id() + "_" + domainProcessDoc.id());
         }
     }
-
-    private DomainProcessDocRepository domainProcessDocRepository;
 }

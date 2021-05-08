@@ -29,9 +29,11 @@ import poussecafe.doc.model.DocletAccess;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocFactory;
 import poussecafe.doc.model.aggregatedoc.AggregateDocId;
+import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocRepository;
 import poussecafe.domain.DomainEvent;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
@@ -46,19 +48,22 @@ import static poussecafe.collection.Collections.asSet;
 public class ProcessStepDocExtractor implements Service {
 
     public List<ProcessStepDoc> extractProcessStepDocs(ModuleDocId moduleDocId, TypeElement classDoc) {
+        String moduleName = moduleDocRepository.get(moduleDocId).attributes().componentDoc().value().name();
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
         for(ExecutableElement methodDoc : docletAccess.methods(classDoc)) {
             if(isProcessStep(methodDoc)) {
                 List<String> customStepSignatures = annotationsResolver.step(methodDoc);
                 if(!customStepSignatures.isEmpty()) {
-                    stepDocs.addAll(extractCustomSteps(moduleDocId, methodDoc));
+                    stepDocs.addAll(extractCustomSteps(moduleDocId, moduleName, methodDoc));
                 } else {
-                    stepDocs.add(extractDeclaredStep(moduleDocId, methodDoc));
+                    stepDocs.add(extractDeclaredStep(moduleDocId, moduleName, methodDoc));
                 }
             }
         }
         return stepDocs;
     }
+
+    private ModuleDocRepository moduleDocRepository;
 
     private DocletAccess docletAccess;
 
@@ -127,6 +132,7 @@ public class ProcessStepDocExtractor implements Service {
     }
 
     private List<ProcessStepDoc> extractCustomSteps(ModuleDocId moduleDocId,
+            String moduleName,
             ExecutableElement methodDoc) {
         List<ProcessStepDoc> stepDocs = new ArrayList<>();
         Set<String> processNames = processNames(methodDoc);
@@ -141,6 +147,7 @@ public class ProcessStepDocExtractor implements Service {
             ProcessStepDocId messageListenerDocId = new ProcessStepDocId(signature.toString());
             ModuleComponentDoc moduleComponentDoc = new ModuleComponentDoc.Builder()
                     .moduleDocId(moduleDocId)
+                    .moduleName(moduleName)
                     .componentDoc(new ComponentDoc.Builder()
                             .name(signature.toString())
                             .description(annotationsResolver.renderCommentBody(methodDoc))
@@ -288,6 +295,7 @@ public class ProcessStepDocExtractor implements Service {
     }
 
     private ProcessStepDoc extractDeclaredStep(ModuleDocId moduleDocId,
+            String moduleName,
             ExecutableElement methodDoc) {
         Logger.info("Extracting declared step from method " + methodDoc.getSimpleName().toString());
 
@@ -314,6 +322,7 @@ public class ProcessStepDocExtractor implements Service {
         ModuleComponentDoc moduleComponentDoc = new ModuleComponentDoc.Builder()
                 .moduleDocId(moduleDocId)
                 .componentDoc(componentDocFactory.buildDoc(id.stringValue(), methodDoc))
+                .moduleName(moduleName)
                 .build();
 
         ProcessStepDoc processStepDoc = messageListenerDocFactory.createMessageListenerDoc(id,
@@ -325,6 +334,8 @@ public class ProcessStepDocExtractor implements Service {
         processStepDoc.attributes().toExternals().value(toExternals);
         processStepDoc.attributes().toExternalsByEvent().value(toExternalsByEvent);
         processStepDoc.attributes().aggregate().value(Optional.of(aggregate));
+        String aggregateName = aggregateDocRepository.get(aggregate).attributes().moduleComponentDoc().value().componentDoc().name();
+        processStepDoc.attributes().aggregateName().value(Optional.of(aggregateName));
 
         return processStepDoc;
     }
@@ -372,4 +383,6 @@ public class ProcessStepDocExtractor implements Service {
     private ComponentDocFactory componentDocFactory;
 
     private AggregateDocFactory aggregateDocFactory;
+
+    private AggregateDocRepository aggregateDocRepository;
 }

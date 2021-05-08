@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import poussecafe.doc.model.ComponentDoc;
+import poussecafe.doc.DocumentationItem;
 import poussecafe.domain.ValueObject;
 
 public class Step implements ValueObject {
@@ -14,7 +14,7 @@ public class Step implements ValueObject {
 
         private Step step = new Step();
 
-        public Builder componentDoc(ComponentDoc componentDoc) {
+        public Builder componentDoc(DocumentationItem componentDoc) {
             step.componentDoc = componentDoc;
             return this;
         }
@@ -62,9 +62,9 @@ public class Step implements ValueObject {
 
     }
 
-    private ComponentDoc componentDoc;
+    private DocumentationItem componentDoc;
 
-    public ComponentDoc componentDoc() {
+    public DocumentationItem componentDoc() {
         return componentDoc;
     }
 

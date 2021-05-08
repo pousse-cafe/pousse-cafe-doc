@@ -10,6 +10,7 @@ public class ModuleComponentDocData implements Serializable {
         ModuleComponentDocData data = new ModuleComponentDocData();
         data.componentDoc = ComponentDocData.of(moduleComponentDoc.componentDoc());
         data.moduleId = moduleComponentDoc.moduleDocId().stringValue();
+        data.moduleName = moduleComponentDoc.moduleName();
         return data;
     }
 
@@ -17,10 +18,13 @@ public class ModuleComponentDocData implements Serializable {
 
     public String moduleId;
 
+    public String moduleName;
+
     public ModuleComponentDoc adapt() {
         return new ModuleComponentDoc.Builder()
                 .componentDoc(componentDoc.toModel())
                 .moduleDocId(ModuleDocId.ofPackageName(moduleId))
+                .moduleName(moduleName)
                 .build();
     }
 }

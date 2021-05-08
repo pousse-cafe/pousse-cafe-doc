@@ -1,11 +1,12 @@
-package poussecafe.doc.model.relation;
+package poussecafe.doc.model.relationdoc;
 
 import java.util.Objects;
 import poussecafe.domain.ValueObject;
+import poussecafe.source.analysis.ClassName;
 
 public class RelationId implements ValueObject {
 
-    public RelationId(String fromClass, String toClass) {
+    public RelationId(ClassName fromClass, ClassName toClass) {
         Objects.requireNonNull(fromClass);
         this.fromClass = fromClass;
 
@@ -13,15 +14,15 @@ public class RelationId implements ValueObject {
         this.toClass = toClass;
     }
 
-    private String fromClass;
+    private ClassName fromClass;
 
-    public String fromClass() {
+    public ClassName fromClass() {
         return fromClass;
     }
 
-    private String toClass;
+    private ClassName toClass;
 
-    public String toClass() {
+    public ClassName toClass() {
         return toClass;
     }
 }

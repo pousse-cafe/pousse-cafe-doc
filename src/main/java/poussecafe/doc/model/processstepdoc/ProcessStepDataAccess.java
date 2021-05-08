@@ -17,4 +17,6 @@ public interface ProcessStepDataAccess<D extends ProcessStepDoc.Attributes> exte
             String eventName);
 
     List<D> findByAggregateDocId(AggregateDocId value);
+
+    List<D> findByModule(ModuleDocId moduleDocId);
 }

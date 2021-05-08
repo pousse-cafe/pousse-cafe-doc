@@ -2,15 +2,18 @@ package poussecafe.doc.model.moduledoc;
 
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
+import poussecafe.attribute.OptionalAttribute;
 import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocData;
+
+import static poussecafe.attribute.AttributeBuilder.optional;
 
 @SuppressWarnings("serial")
 public class ModuleDocData implements ModuleDoc.Attributes, Serializable {
 
     @Override
     public Attribute<ModuleDocId> identifier() {
-        return new Attribute<ModuleDocId>() {
+        return new Attribute<>() {
             @Override
             public ModuleDocId value() {
                 return ModuleDocId.ofPackageName(id);
@@ -27,7 +30,7 @@ public class ModuleDocData implements ModuleDoc.Attributes, Serializable {
 
     @Override
     public Attribute<ComponentDoc> componentDoc() {
-        return new Attribute<ComponentDoc>() {
+        return new Attribute<>() {
             @Override
             public ComponentDoc value() {
                 return componentDoc.toModel();
@@ -41,4 +44,14 @@ public class ModuleDocData implements ModuleDoc.Attributes, Serializable {
     }
 
     private ComponentDocData componentDoc;
+
+    @Override
+    public OptionalAttribute<String> className() {
+        return optional(String.class)
+                .read(() -> className)
+                .write(value -> className = value)
+                .build();
+    }
+
+    private String className;
 }

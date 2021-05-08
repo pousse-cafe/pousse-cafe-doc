@@ -26,6 +26,7 @@ import static java.util.stream.Collectors.toList;
 
 public class AnnotationsResolver implements Service {
 
+    @Deprecated(since = "0.29")
     public boolean isIgnored(Element doc) {
         return hasTag(doc, Tags.IGNORE);
     }
@@ -49,6 +50,7 @@ public class AnnotationsResolver implements Service {
 
     private DocletEnvironment docletEnvironment;
 
+    @Deprecated(since = "0.16")
     public boolean isStep(ExecutableElement methodDoc) {
         return hasTag(methodDoc, Tags.STEP) ||
                 isAnnotatedWith(methodDoc, MessageListener.class);
@@ -64,6 +66,7 @@ public class AnnotationsResolver implements Service {
         return AnnotationUtils.annotations(methodDoc, annotationClass);
     }
 
+    @Deprecated(since = "0.16")
     public List<String> step(ExecutableElement methodDoc) {
         List<String> customSteps = new ArrayList<>();
         List<String> customStepsByTag = tags(methodDoc, Tags.STEP).stream()
@@ -134,10 +137,12 @@ public class AnnotationsResolver implements Service {
                 .collect(toList());
     }
 
+    @Deprecated(since = "0.29")
     public boolean isTrivial(Element doc) {
         return hasTag(doc, Tags.TRIVIAL);
     }
 
+    @Deprecated(since = "0.29")
     public Optional<String> shortDescription(Element doc) {
         return optionalTag(doc, Tags.SHORT);
     }

@@ -14,9 +14,9 @@ import poussecafe.doc.model.entitydoc.EntityDoc;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
 import poussecafe.doc.model.entitydoc.EntityDocId;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
-import poussecafe.doc.model.relation.Component;
-import poussecafe.doc.model.relation.ComponentType;
-import poussecafe.doc.model.relation.RelationFactory.NewRelationParameters;
+import poussecafe.doc.model.relationdoc.Component;
+import poussecafe.doc.model.relationdoc.ComponentType;
+import poussecafe.doc.model.relationdoc.RelationDocFactory.NewRelationParameters;
 import poussecafe.doc.model.vodoc.ValueObjectDoc;
 import poussecafe.doc.model.vodoc.ValueObjectDocFactory;
 import poussecafe.doc.model.vodoc.ValueObjectDocId;
@@ -65,7 +65,10 @@ public class RelationCreator implements Consumer<TypeElement> {
                 Logger.debug("Building bi-directional relation between aggregate " + classDoc.getQualifiedName() + " and its id " + aggregateDoc.get().attributes().idClassName().value());
                 NewRelationParameters aggregateIdParameters = new NewRelationParameters();
                 aggregateIdParameters.fromComponent = component(classDoc);
-                aggregateIdParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, aggregateDoc.get().attributes().idClassName().value());
+                aggregateIdParameters.toComponent = new Component(
+                        ComponentType.VALUE_OBJECT,
+                        aggregateDoc.get().className(),
+                        aggregateDoc.get().attributes().moduleComponentDoc().value().componentDoc().name());
                 componentLinking.linkComponents(aggregateIdParameters);
 
                 NewRelationParameters idAggregateParameters = new NewRelationParameters();
@@ -88,7 +91,10 @@ public class RelationCreator implements Consumer<TypeElement> {
                 Logger.debug("Building relation between entity " + classDoc.getQualifiedName() + " and its id " + entityDoc.get().attributes().idClassName().value());
                 NewRelationParameters entityIdParameters = new NewRelationParameters();
                 entityIdParameters.fromComponent = component(classDoc);
-                entityIdParameters.toComponent = new Component(ComponentType.VALUE_OBJECT, entityDoc.get().attributes().idClassName().value());
+                entityIdParameters.toComponent = new Component(
+                        ComponentType.VALUE_OBJECT,
+                        idDoc.get().className(),
+                        idDoc.orElseThrow().attributes().moduleComponentDoc().value().componentDoc().name());
                 componentLinking.linkComponents(entityIdParameters);
             }
         }
@@ -97,16 +103,25 @@ public class RelationCreator implements Consumer<TypeElement> {
     private EntityDocRepository entityDocRepository;
 
     private Component component(TypeElement classDoc) {
-        return new Component(componentType(classDoc), classDoc.getQualifiedName().toString());
-    }
-
-    private ComponentType componentType(TypeElement classDoc) {
+        String className = classDoc.getQualifiedName().toString();
         if(aggregateDocFactory.isAggregateDoc(classDoc)) {
-            return ComponentType.AGGREGATE;
+            var aggregate = aggregateDocRepository.get(AggregateDocId.ofClassName(className));
+            return new Component(
+                    ComponentType.AGGREGATE,
+                    aggregate.className(),
+                    aggregate.attributes().moduleComponentDoc().value().componentDoc().name());
         } else if(entityDocFactory.isEntityDoc(classDoc)) {
-            return ComponentType.ENTITY;
+            var entity = entityDocRepository.get(EntityDocId.ofClassName(className));
+            return new Component(
+                    ComponentType.ENTITY,
+                    entity.className(),
+                    entity.attributes().moduleComponentDoc().value().componentDoc().name());
         } else if(valueObjectDocFactory.isValueObjectDoc(classDoc)) {
-            return ComponentType.VALUE_OBJECT;
+            var valueObject = valueObjectDocRepository.get(ValueObjectDocId.ofClassName(className));
+            return new Component(
+                    ComponentType.VALUE_OBJECT,
+                    valueObject.className(),
+                    valueObject.attributes().moduleComponentDoc().value().componentDoc().name());
         } else {
             throw new IllegalArgumentException("Unsupported component class " + classDoc.getQualifiedName().toString());
         }

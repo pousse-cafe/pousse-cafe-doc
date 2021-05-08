@@ -1,4 +1,4 @@
-package poussecafe.doc.model.relation;
+package poussecafe.doc.model.relationdoc;
 
 public enum ComponentType {
     AGGREGATE,

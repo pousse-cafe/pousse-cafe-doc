@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import poussecafe.doc.DocumentationItem;
 import poussecafe.doc.PousseCafeDocletConfiguration;
 import poussecafe.doc.model.aggregatedoc.AggregateDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocRepository;
@@ -17,15 +18,16 @@ import poussecafe.doc.model.moduledoc.ModuleDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocRepository;
 import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
 import poussecafe.doc.model.processstepdoc.ProcessStepDocRepository;
-import poussecafe.doc.model.relation.ComponentType;
-import poussecafe.doc.model.relation.Relation;
-import poussecafe.doc.model.relation.RelationRepository;
+import poussecafe.doc.model.relationdoc.ComponentType;
+import poussecafe.doc.model.relationdoc.RelationDoc;
+import poussecafe.doc.model.relationdoc.RelationDocRepository;
 import poussecafe.doc.model.servicedoc.ServiceDoc;
 import poussecafe.doc.model.servicedoc.ServiceDocRepository;
 import poussecafe.doc.model.vodoc.ValueObjectDoc;
 import poussecafe.doc.model.vodoc.ValueObjectDocId;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
 import poussecafe.domain.Service;
+import poussecafe.source.analysis.ClassName;
 
 import static java.util.stream.Collectors.toList;
 
@@ -36,6 +38,7 @@ public class DomainFactory implements Service {
                 .name(configuration.domainName())
                 .version(configuration.version())
                 .modules(modules())
+                .relations(relations())
                 .build();
     }
 
@@ -53,10 +56,11 @@ public class DomainFactory implements Service {
 
     private Module module(ModuleDoc moduleDoc) {
         return new Module.Builder()
-                .documentation(moduleDoc)
+                .documentation(moduleDoc.toDocumentationItem())
                 .aggregates(aggregates(moduleDoc))
-                .services(services(moduleDoc))
+                .services(services(moduleDoc).stream().map(ServiceDoc::toDocumentationItem).collect(toList()))
                 .processes(processes(moduleDoc))
+                .listeners(listeners(moduleDoc))
                 .build();
     }
 
@@ -72,32 +76,33 @@ public class DomainFactory implements Service {
 
     private Aggregate aggregate(AggregateDoc aggregateDoc) {
         return new Aggregate.Builder()
-                .documentation(aggregateDoc)
+                .documentation(aggregateDoc.toDocumentationItem())
                 .entities(entities(aggregateDoc))
                 .valueObjects(valueObjects(aggregateDoc))
                 .processSteps(processSteps(aggregateDoc))
                 .build();
     }
 
-    private List<EntityDoc> entities(AggregateDoc aggregateDoc) {
+    private List<DocumentationItem> entities(AggregateDoc aggregateDoc) {
         return findEntities(aggregateDoc.className()).stream()
                 .map(entityDocRepository::getOptional)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .map(EntityDoc::toDocumentationItem)
                 .collect(toList());
     }
 
-    private Set<EntityDocId> findEntities(String fromClassName) {
+    private Set<EntityDocId> findEntities(ClassName fromClassName) {
         return findEntities(fromClassName, new HashSet<>());
     }
 
-    private Set<EntityDocId> findEntities(String fromClassName, Set<String> exploredClasses) {
+    private Set<EntityDocId> findEntities(ClassName fromClassName, Set<ClassName> exploredClasses) {
         Set<EntityDocId> ids = new HashSet<>();
         if(!exploredClasses.contains(fromClassName)) {
             exploredClasses.add(fromClassName);
-            for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
+            for(RelationDoc relation : relationRepository.findWithFromClassName(fromClassName)) {
                 if(relation.toComponent().type() == ComponentType.ENTITY) {
-                    ids.add(EntityDocId.ofClassName(relation.toComponent().className()));
+                    ids.add(EntityDocId.ofClassName(relation.toComponent().className().toString()));
                 }
                 if(relation.toComponent().type() != ComponentType.AGGREGATE) {
                     ids.addAll(findEntities(relation.toComponent().className(), exploredClasses));
@@ -107,29 +112,30 @@ public class DomainFactory implements Service {
         return ids;
     }
 
-    private RelationRepository relationRepository;
+    private RelationDocRepository relationRepository;
 
     private EntityDocRepository entityDocRepository;
 
-    private List<ValueObjectDoc> valueObjects(AggregateDoc aggregateDoc) {
+    private List<DocumentationItem> valueObjects(AggregateDoc aggregateDoc) {
         return findValueObjects(aggregateDoc.className()).stream()
                 .map(valueObjectDocRepository::getOptional)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
+                .map(ValueObjectDoc::toDocumentationItem)
                 .collect(toList());
     }
 
-    private Set<ValueObjectDocId> findValueObjects(String fromClassName) {
+    private Set<ValueObjectDocId> findValueObjects(ClassName fromClassName) {
         return findValueObjects(fromClassName, new HashSet<>());
     }
 
-    private Set<ValueObjectDocId> findValueObjects(String fromClassName, Set<String> exploredClassNames) {
+    private Set<ValueObjectDocId> findValueObjects(ClassName fromClassName, Set<ClassName> exploredClassNames) {
         Set<ValueObjectDocId> ids = new HashSet<>();
         if(!exploredClassNames.contains(fromClassName)) {
             exploredClassNames.add(fromClassName);
-            for(Relation relation : relationRepository.findWithFromClassName(fromClassName)) {
+            for(RelationDoc relation : relationRepository.findWithFromClassName(fromClassName)) {
                 if(relation.toComponent().type() == ComponentType.VALUE_OBJECT) {
-                    ids.add(ValueObjectDocId.ofClassName(relation.toComponent().className()));
+                    ids.add(ValueObjectDocId.ofClassName(relation.toComponent().className().toString()));
                 }
                 if(relation.toComponent().type() != ComponentType.AGGREGATE) {
                     ids.addAll(findValueObjects(relation.toComponent().className(), exploredClassNames));
@@ -141,8 +147,10 @@ public class DomainFactory implements Service {
 
     private ValueObjectDocRepository valueObjectDocRepository;
 
-    private List<ProcessStepDoc> processSteps(AggregateDoc aggregateDoc) {
-        return processStepDocRepository.findByAggregateDocId(aggregateDoc.attributes().identifier().value());
+    private List<DocumentationItem> processSteps(AggregateDoc aggregateDoc) {
+        return processStepDocRepository.findByAggregateDocId(aggregateDoc.attributes().identifier().value()).stream()
+                .map(ProcessStepDoc::toDocumentationItem)
+                .collect(toList());
     }
 
     private ProcessStepDocRepository processStepDocRepository;
@@ -153,9 +161,25 @@ public class DomainFactory implements Service {
 
     private ServiceDocRepository serviceDocRepository;
 
-    private List<DomainProcessDoc> processes(ModuleDoc moduleDoc) {
-        return domainProcessDocRepository.findByModuleId(moduleDoc.attributes().identifier().value());
+    private List<DocumentationItem> processes(ModuleDoc moduleDoc) {
+        return domainProcessDocRepository.findByModuleId(moduleDoc.attributes().identifier().value()).stream()
+                .map(DomainProcessDoc::toDocumentationItem)
+                .collect(toList());
     }
 
     private DomainProcessDocRepository domainProcessDocRepository;
+
+    private List<MessageListener> listeners(ModuleDoc moduleDoc) {
+        return processStepDocRepository.findByModule(moduleDoc.attributes().identifier().value()).stream()
+                .map(ProcessStepDoc::toMessageListener)
+                .collect(toList());
+    }
+
+    private List<Relation> relations() {
+        return relationDocRepository.findAll().stream()
+                .map(RelationDoc::toRelation)
+                .collect(toList());
+    }
+
+    private RelationDocRepository relationDocRepository;
 }

@@ -13,6 +13,7 @@ import poussecafe.doc.model.ComponentDoc;
 import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocRepository;
 import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Process;
@@ -28,8 +29,10 @@ public class DomainProcessDocFactory extends AggregateFactory<DomainProcessDocId
         String name = name(doc);
         DomainProcessDocId id = new DomainProcessDocId(doc.getQualifiedName().toString());
         DomainProcessDoc domainProcessDoc = newAggregateWithId(id);
+        String moduleName = moduleDocRepository.get(moduleDocId).attributes().componentDoc().value().name();
         domainProcessDoc.attributes().moduleComponentDoc().value(new ModuleComponentDoc.Builder()
                 .moduleDocId(moduleDocId)
+                .moduleName(moduleName)
                 .componentDoc(componentDocFactory.buildDoc(name, doc))
                 .build());
 
@@ -48,6 +51,8 @@ public class DomainProcessDocFactory extends AggregateFactory<DomainProcessDocId
     }
 
     private ComponentDocFactory componentDocFactory;
+
+    private ModuleDocRepository moduleDocRepository;
 
     public List<DomainProcessDoc> createDomainProcesses(ModuleDocId moduleDocId, ExecutableElement methodDoc) {
         if(!isDomainProcessDoc(methodDoc)) {
@@ -82,8 +87,10 @@ public class DomainProcessDocFactory extends AggregateFactory<DomainProcessDocId
             ProcessDescription description) {
         DomainProcessDocId id = new DomainProcessDocId(moduleDocId.stringValue() + "." + description.name());
         DomainProcessDoc doc = newAggregateWithId(id);
+        String moduleName = moduleDocRepository.get(moduleDocId).attributes().componentDoc().value().name();
         doc.attributes().moduleComponentDoc().value(new ModuleComponentDoc.Builder()
                 .moduleDocId(moduleDocId)
+                .moduleName(moduleName)
                 .componentDoc(new ComponentDoc.Builder()
                         .name(description.name())
                         .description(description.description())

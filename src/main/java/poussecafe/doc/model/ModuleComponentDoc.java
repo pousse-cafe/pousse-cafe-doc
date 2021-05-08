@@ -1,7 +1,10 @@
 package poussecafe.doc.model;
 
+import poussecafe.doc.DocumentationItem;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.ValueObject;
+
+import static java.util.Objects.requireNonNull;
 
 public class ModuleComponentDoc implements ValueObject {
 
@@ -19,7 +22,15 @@ public class ModuleComponentDoc implements ValueObject {
             return this;
         }
 
+        public Builder moduleName(String moduleName) {
+            doc.moduleName = moduleName;
+            return this;
+        }
+
         public ModuleComponentDoc build() {
+            requireNonNull(doc.componentDoc);
+            requireNonNull(doc.moduleDocId);
+            requireNonNull(doc.moduleName);
             return doc;
         }
     }
@@ -38,5 +49,16 @@ public class ModuleComponentDoc implements ValueObject {
 
     public ModuleDocId moduleDocId() {
         return moduleDocId;
+    }
+
+    private String moduleName;
+
+    public String moduleName() {
+        return moduleName;
+    }
+
+    public DocumentationItem.Builder toDocumentationItem() {
+        return componentDoc.documentationItemBuilder()
+                .moduleName(moduleName);
     }
 }

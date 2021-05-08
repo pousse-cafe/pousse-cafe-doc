@@ -3,12 +3,7 @@ package poussecafe.doc.model;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import poussecafe.doc.model.aggregatedoc.AggregateDoc;
-import poussecafe.doc.model.domainprocessdoc.DomainProcessDoc;
-import poussecafe.doc.model.entitydoc.EntityDoc;
-import poussecafe.doc.model.moduledoc.ModuleDoc;
-import poussecafe.doc.model.servicedoc.ServiceDoc;
-import poussecafe.doc.model.vodoc.ValueObjectDoc;
+import poussecafe.doc.DocumentationItem;
 import poussecafe.domain.Service;
 
 import static java.util.stream.Collectors.toList;
@@ -18,55 +13,55 @@ public class UbiquitousLanguageFactory implements Service {
     public List<UbiquitousLanguageEntry> buildUbiquitousLanguage(Domain domain) {
         Set<UbiquitousLanguageEntry> language = new HashSet<>();
         for(Module module : domain.modules()) {
-            ModuleDoc moduleDoc = module.documentation();
+            var moduleDoc = module.documentation();
             language.add(new UbiquitousLanguageEntry.Builder()
-                            .componentDoc(moduleDoc.attributes().componentDoc().value())
+                            .componentDoc(moduleDoc)
                             .type("Module")
                             .build());
 
-            String moduleName = moduleDoc.attributes().componentDoc().value().name();
+            String moduleName = moduleDoc.moduleName();
             for (Aggregate aggregate : module.aggregates()) {
-                AggregateDoc aggregateDoc = aggregate.documentation();
+                var aggregateDoc = aggregate.documentation();
                 language
                         .add(new UbiquitousLanguageEntry.Builder()
                                 .moduleName(moduleName)
-                                .componentDoc(aggregateDoc.attributes().moduleComponentDoc().value().componentDoc())
+                                .componentDoc(aggregateDoc)
                                 .type("Aggregate")
                                 .build());
 
-                for (EntityDoc entityDoc : aggregate.entities()) {
+                for (DocumentationItem entityDoc : aggregate.entities()) {
                     language
                             .add(new UbiquitousLanguageEntry.Builder()
                                     .moduleName(moduleName)
-                                    .componentDoc(entityDoc.attributes().moduleComponentDoc().value().componentDoc())
+                                    .componentDoc(entityDoc)
                                     .type("Entity")
                                     .build());
                 }
 
-                for (ValueObjectDoc valueObjectDoc : aggregate.valueObjects()) {
+                for (DocumentationItem valueObjectDoc : aggregate.valueObjects()) {
                     language
                             .add(new UbiquitousLanguageEntry.Builder()
                                     .moduleName(moduleName)
-                                    .componentDoc(valueObjectDoc.attributes().moduleComponentDoc().value().componentDoc())
+                                    .componentDoc(valueObjectDoc)
                                     .type("Value Object")
                                     .build());
                 }
             }
 
-            for (ServiceDoc serviceDoc : module.services()) {
+            for (DocumentationItem serviceDoc : module.services()) {
                 language
                         .add(new UbiquitousLanguageEntry.Builder()
                                 .moduleName(moduleName)
-                                .componentDoc(serviceDoc.attributes().moduleComponentDoc().value().componentDoc())
+                                .componentDoc(serviceDoc)
                                 .type("Service")
                                 .build());
             }
 
-            for (DomainProcessDoc domainProcessDoc : module.processes()) {
+            for (DocumentationItem domainProcessDoc : module.processes()) {
                 language
                         .add(new UbiquitousLanguageEntry.Builder()
                                 .moduleName(moduleName)
-                                .componentDoc(domainProcessDoc.attributes().moduleComponentDoc().value().componentDoc())
+                                .componentDoc(domainProcessDoc)
                                 .type("Domain Process")
                                 .build());
             }

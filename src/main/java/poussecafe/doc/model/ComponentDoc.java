@@ -2,7 +2,9 @@ package poussecafe.doc.model;
 
 import java.util.Objects;
 import java.util.Optional;
+import poussecafe.doc.DocumentationItem;
 import poussecafe.domain.ValueObject;
+import poussecafe.source.model.Documentation;
 
 public class ComponentDoc implements ValueObject {
 
@@ -76,5 +78,15 @@ public class ComponentDoc implements ValueObject {
         } else {
             return description.replaceAll("<[a-z\\/]+>", "");
         }
+    }
+
+    public DocumentationItem.Builder documentationItemBuilder() {
+        return new DocumentationItem.Builder()
+                .name(name)
+                .description(new Documentation.Builder()
+                        .description(description)
+                        .shortDescription(shortDescription.orElse(null))
+                        .trivial(trivial)
+                        .build());
     }
 }

@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import poussecafe.doc.DocumentationItem;
 
 import static poussecafe.util.Equality.referenceEquals;
 
@@ -19,7 +20,7 @@ public class UbiquitousLanguageEntry
             return this;
         }
 
-        public Builder componentDoc(ComponentDoc componentDoc) {
+        public Builder componentDoc(DocumentationItem componentDoc) {
             entry.componentDoc = componentDoc;
             return this;
         }
@@ -46,9 +47,9 @@ public class UbiquitousLanguageEntry
         return moduleName;
     }
 
-    private ComponentDoc componentDoc;
+    private DocumentationItem componentDoc;
 
-    public ComponentDoc componentDoc() {
+    public DocumentationItem componentDoc() {
         return componentDoc;
     }
 

@@ -8,7 +8,9 @@ import java.util.function.Consumer;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.util.ElementFilter;
 import jdk.javadoc.doclet.DocletEnvironment;
+import poussecafe.doc.annotations.AnnotationUtils;
 import poussecafe.doc.model.AnnotationsResolver;
+import poussecafe.source.Ignore;
 
 public class PackagesAnalyzer {
 
@@ -38,7 +40,8 @@ public class PackagesAnalyzer {
     public void analyzeCode() {
         Set<PackageElement> classes = ElementFilter.packagesIn(docletEnvironment.getIncludedElements());
         for (PackageElement classDoc : classes) {
-            if (!annotationsResolver.isIgnored(classDoc)) {
+            if (!annotationsResolver.isIgnored(classDoc)
+                    && AnnotationUtils.annotation(classDoc, Ignore.class).isEmpty()) {
                 processPackageDoc(classDoc);
             }
         }

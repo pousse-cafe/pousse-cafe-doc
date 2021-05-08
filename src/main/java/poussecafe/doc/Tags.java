@@ -2,6 +2,7 @@ package poussecafe.doc;
 
 public interface Tags {
 
+    @Deprecated(since = "0.29")
     String IGNORE = "ignore";
 
     @Deprecated(since = "0.16")
@@ -13,8 +14,10 @@ public interface Tags {
     @Deprecated(since = "0.17")
     String FROM_EXTERNAL = "from_external";
 
+    @Deprecated(since = "0.29")
     String TRIVIAL = "trivial";
 
+    @Deprecated(since = "0.29")
     String SHORT = "short";
 
     @Deprecated(since = "0.16")

@@ -7,6 +7,7 @@ import poussecafe.doc.ClassDocPredicates;
 import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
+import poussecafe.doc.model.moduledoc.ModuleDocRepository;
 import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Entity;
@@ -21,8 +22,10 @@ public class EntityDocFactory extends AggregateFactory<EntityDocId, EntityDoc, E
         String name = name(entityClassDoc);
         EntityDocId id = EntityDocId.ofClassName(entityClassDoc.getQualifiedName().toString());
         EntityDoc entityDoc = newAggregateWithId(id);
+        String moduleName = moduleDocRepository.get(moduleDocId).attributes().componentDoc().value().name();
         entityDoc.attributes().moduleComponentDoc().value(new ModuleComponentDoc.Builder()
                 .moduleDocId(moduleDocId)
+                .moduleName(moduleName)
                 .componentDoc(componentDocFactory.buildDoc(name, entityClassDoc))
                 .build());
 
@@ -32,6 +35,8 @@ public class EntityDocFactory extends AggregateFactory<EntityDocId, EntityDoc, E
     }
 
     private ComponentDocFactory componentDocFactory;
+
+    private ModuleDocRepository moduleDocRepository;
 
     public String idClassName(TypeElement aggregateClassDoc) {
         DeclaredType superclass = (DeclaredType) aggregateClassDoc.getSuperclass();

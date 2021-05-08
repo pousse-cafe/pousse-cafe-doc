@@ -12,6 +12,8 @@ import jdk.javadoc.doclet.DocletEnvironment;
 import jdk.javadoc.doclet.Reporter;
 import poussecafe.doc.model.ClassDocRepository;
 import poussecafe.doc.model.DocletAccess;
+import poussecafe.doc.model.Domain;
+import poussecafe.doc.model.DomainFactory;
 import poussecafe.doc.options.BasePackageOption;
 import poussecafe.doc.options.CustomDotExecutableOption;
 import poussecafe.doc.options.CustomFdpExecutableOption;
@@ -84,8 +86,9 @@ public class PousseCafeDoclet implements Doclet {
             analyzeCode();
             createOutputFolder();
 
-            writeGraphs();
-            writeHtml();
+            Domain domain = runtime.environment().service(DomainFactory.class).orElseThrow().buildDomain();
+            writeGraphs(domain);
+            writeHtml(domain);
             writePdf();
             return true;
         } catch (Exception e) {
@@ -194,16 +197,16 @@ public class PousseCafeDoclet implements Doclet {
         outputDirectory.mkdirs();
     }
 
-    private void writeGraphs() {
+    private void writeGraphs(Domain domain) {
         GraphImagesWriter graphsWriter = new GraphImagesWriter(configuration);
         runtime.injector().injectDependenciesInto(graphsWriter);
-        graphsWriter.writeImages();
+        graphsWriter.writeImages(domain);
     }
 
-    private void writeHtml() {
+    private void writeHtml(Domain domain) {
         HtmlWriter htmlWriter = new HtmlWriter();
         runtime.injector().injectDependenciesInto(htmlWriter);
-        htmlWriter.writeHtml();
+        htmlWriter.writeHtml(domain);
     }
 
     private void writePdf() {

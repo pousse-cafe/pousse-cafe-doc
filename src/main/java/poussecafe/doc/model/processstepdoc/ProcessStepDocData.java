@@ -15,6 +15,8 @@ import poussecafe.doc.model.ModuleComponentDocData;
 import poussecafe.doc.model.aggregatedoc.AggregateDocId;
 import poussecafe.doc.model.aggregatedoc.adapters.AggregateDocIdDataAdapter;
 
+import static poussecafe.attribute.AttributeBuilder.optional;
+
 @SuppressWarnings("serial")
 public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attributes {
 
@@ -100,7 +102,7 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
 
     @Override
     public MapAttribute<NameRequired, List<String>> toExternalsByEvent() {
-        return AttributeBuilder.map(NameRequired.class, DataAdapters.parametrizedListClass(String.class))
+        return AttributeBuilder.map(NameRequired.class, AttributeBuilder.parametrizedListClass(String.class))
                 .usingEntryDataAdapters(DataAdapters.auto(NameRequired.class, NameRequiredData.class),
                         DataAdapters.listWithAdapter(DataAdapters.identity()))
                 .withMap(toExternalsByEvent)
@@ -108,4 +110,14 @@ public class ProcessStepDocData implements Serializable, ProcessStepDoc.Attribut
     }
 
     private HashMap<NameRequiredData, List<String>> toExternalsByEvent = new HashMap<>();
+
+    @Override
+    public OptionalAttribute<String> aggregateName() {
+        return optional(String.class)
+                .read(() -> aggregateName)
+                .write(value -> aggregateName = value)
+                .build();
+    }
+
+    private String aggregateName;
 }

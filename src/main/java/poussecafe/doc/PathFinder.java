@@ -13,8 +13,10 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import jdk.javadoc.doclet.DocletEnvironment;
+import poussecafe.doc.annotations.AnnotationUtils;
 import poussecafe.doc.model.DocletAccess;
 import poussecafe.doc.model.DocletServices;
+import poussecafe.source.Ignore;
 
 public class PathFinder {
 
@@ -99,14 +101,16 @@ public class PathFinder {
     private Set<String> alreadyExplored = new HashSet<>();
 
     private boolean isCrawlableMethod(ExecutableElement methodDoc) {
-        return methodDoc.getModifiers().contains(Modifier.PUBLIC) &&
-                !docletServices.docletAccess().isOverride(methodDoc) &&
-                !docletServices.annotationsResolver().isIgnored(methodDoc);
+        return methodDoc.getModifiers().contains(Modifier.PUBLIC)
+                && !docletServices.docletAccess().isOverride(methodDoc)
+                && !docletServices.annotationsResolver().isIgnored(methodDoc)
+                && AnnotationUtils.annotation(methodDoc, Ignore.class).isEmpty();
     }
 
     private boolean isCrawlableField(VariableElement methodDoc) {
-        return methodDoc.getModifiers().contains(Modifier.PUBLIC) &&
-                !docletServices.annotationsResolver().isIgnored(methodDoc);
+        return methodDoc.getModifiers().contains(Modifier.PUBLIC)
+                && !docletServices.annotationsResolver().isIgnored(methodDoc)
+                && AnnotationUtils.annotation(methodDoc, Ignore.class).isEmpty();
     }
 
     private void tryType(TypeMirror type) {

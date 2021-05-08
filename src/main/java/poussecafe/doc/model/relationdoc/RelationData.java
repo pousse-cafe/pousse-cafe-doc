@@ -1,23 +1,26 @@
-package poussecafe.doc.model.relation;
+package poussecafe.doc.model.relationdoc;
 
 import java.io.Serializable;
 import poussecafe.attribute.Attribute;
+import poussecafe.source.analysis.ClassName;
+
+import static poussecafe.attribute.AttributeBuilder.single;
 
 @SuppressWarnings("serial")
-public class RelationData implements Relation.Attributes, Serializable {
+public class RelationData implements RelationDoc.Attributes, Serializable {
 
     @Override
     public Attribute<RelationId> identifier() {
-        return new Attribute<RelationId>() {
+        return new Attribute<>() {
             @Override
             public RelationId value() {
-                return new RelationId(fromClass, toClass);
+                return new RelationId(new ClassName(fromClass), new ClassName(toClass));
             }
 
             @Override
             public void value(RelationId value) {
-                fromClass = value.fromClass();
-                toClass = value.toClass();
+                fromClass = value.fromClass().toString();
+                toClass = value.toClass().toString();
             }
         };
     }
@@ -28,7 +31,7 @@ public class RelationData implements Relation.Attributes, Serializable {
 
     @Override
     public Attribute<ComponentType> fromType() {
-        return new Attribute<ComponentType>() {
+        return new Attribute<>() {
             @Override
             public ComponentType value() {
                 return fromType;
@@ -45,7 +48,7 @@ public class RelationData implements Relation.Attributes, Serializable {
 
     @Override
     public Attribute<ComponentType> toType() {
-        return new Attribute<ComponentType>() {
+        return new Attribute<>() {
             @Override
             public ComponentType value() {
                 return toType;
@@ -59,4 +62,24 @@ public class RelationData implements Relation.Attributes, Serializable {
     }
 
     private ComponentType toType;
+
+    @Override
+    public Attribute<String> fromName() {
+        return single(String.class)
+                .read(() -> fromName)
+                .write(value -> fromName = value)
+                .build();
+    }
+
+    private String fromName;
+
+    @Override
+    public Attribute<String> toName() {
+        return single(String.class)
+                .read(() -> toName)
+                .write(value -> toName = value)
+                .build();
+    }
+
+    private String toName;
 }
