@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import poussecafe.doc.DocumentationItem;
 import poussecafe.doc.model.domainprocessdoc.Step;
 import poussecafe.doc.model.domainprocessdoc.StepName;
 import poussecafe.doc.model.domainprocessdoc.ToStep;

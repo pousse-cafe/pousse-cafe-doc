@@ -6,7 +6,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import jdk.javadoc.doclet.DocletEnvironment;
-import poussecafe.doc.ClassDocPredicates;
+import poussecafe.doc.doclet.ClassDocPredicates;
 import poussecafe.doc.model.DocletAccess;
 import poussecafe.domain.Service;
 import poussecafe.messaging.Message;

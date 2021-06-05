@@ -3,7 +3,6 @@ package poussecafe.doc.model;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import poussecafe.doc.DocumentationItem;
 import poussecafe.domain.Service;
 
 import static java.util.stream.Collectors.toList;

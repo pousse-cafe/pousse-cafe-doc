@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import poussecafe.doc.DocumentationItem;
+import poussecafe.doc.model.DocumentationItem;
 import poussecafe.domain.ValueObject;
 
 public class Step implements ValueObject {

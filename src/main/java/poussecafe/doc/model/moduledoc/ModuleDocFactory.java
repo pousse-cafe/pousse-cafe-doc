@@ -3,7 +3,7 @@ package poussecafe.doc.model.moduledoc;
 import java.util.Optional;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
-import poussecafe.doc.ClassDocPredicates;
+import poussecafe.doc.doclet.ClassDocPredicates;
 import poussecafe.doc.model.AnnotationsResolver;
 import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.domain.AggregateFactory;

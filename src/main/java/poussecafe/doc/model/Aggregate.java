@@ -3,7 +3,6 @@ package poussecafe.doc.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import poussecafe.doc.DocumentationItem;
 
 public class Aggregate {
 

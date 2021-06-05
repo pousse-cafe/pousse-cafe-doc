@@ -6,7 +6,7 @@ import poussecafe.attribute.MapAttribute;
 import poussecafe.attribute.OptionalAttribute;
 import poussecafe.attribute.SetAttribute;
 import poussecafe.discovery.Aggregate;
-import poussecafe.doc.DocumentationItem;
+import poussecafe.doc.model.DocumentationItem;
 import poussecafe.doc.model.MessageListener;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.aggregatedoc.AggregateDocId;

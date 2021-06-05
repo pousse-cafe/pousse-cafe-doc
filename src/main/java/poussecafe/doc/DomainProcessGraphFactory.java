@@ -2,10 +2,12 @@ package poussecafe.doc;
 
 import java.util.Objects;
 import java.util.Optional;
+import poussecafe.doc.doclet.Logger;
 import poussecafe.doc.graph.DirectedEdge;
 import poussecafe.doc.graph.DirectedGraph;
 import poussecafe.doc.graph.Node;
 import poussecafe.doc.graph.NodeStyle;
+import poussecafe.doc.model.DocumentationItem;
 import poussecafe.doc.model.Domain;
 import poussecafe.doc.model.DomainProcessSteps;
 import poussecafe.doc.model.DomainProcessStepsFactory;

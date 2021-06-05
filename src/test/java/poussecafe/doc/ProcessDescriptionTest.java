@@ -1,6 +1,7 @@
 package poussecafe.doc;
 
 import org.junit.Test;
+import poussecafe.doc.model.ProcessDescription;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;

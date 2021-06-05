@@ -13,6 +13,8 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import poussecafe.doc.doclet.PousseCafeDocletConfiguration;
+import poussecafe.doc.doclet.PousseCafeDocletExecutor;
 import poussecafe.files.Difference;
 import poussecafe.files.DifferenceType;
 

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xhtmlrenderer.util.XRLog;
+import poussecafe.doc.doclet.Logger;
+import poussecafe.doc.doclet.PousseCafeDocletConfiguration;
 
 public class PdfWriter {
 

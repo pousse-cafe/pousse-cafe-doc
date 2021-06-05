@@ -4,7 +4,6 @@ import java.util.Objects;
 import java.util.Optional;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import poussecafe.doc.DocumentationItem;
 
 import static poussecafe.util.Equality.referenceEquals;
 

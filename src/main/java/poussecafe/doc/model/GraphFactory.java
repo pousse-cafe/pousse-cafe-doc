@@ -1,7 +1,6 @@
 package poussecafe.doc.model;
 
 import poussecafe.doc.AggregateGraphFactory;
-import poussecafe.doc.DocumentationItem;
 import poussecafe.doc.DomainProcessGraphFactory;
 import poussecafe.doc.ModuleGraphFactory;
 import poussecafe.doc.graph.DirectedGraph;

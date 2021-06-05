@@ -13,11 +13,10 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.PackageElement;
 import jdk.javadoc.doclet.DocletEnvironment;
 import poussecafe.discovery.MessageListener;
-import poussecafe.doc.Logger;
-import poussecafe.doc.ProcessDescription;
-import poussecafe.doc.TagContentStringBuilder;
-import poussecafe.doc.Tags;
 import poussecafe.doc.annotations.AnnotationUtils;
+import poussecafe.doc.doclet.Logger;
+import poussecafe.doc.doclet.TagContentStringBuilder;
+import poussecafe.doc.doclet.Tags;
 import poussecafe.domain.Service;
 import poussecafe.exception.PousseCafeException;
 

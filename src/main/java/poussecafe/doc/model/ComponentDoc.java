@@ -2,7 +2,6 @@ package poussecafe.doc.model;
 
 import java.util.Objects;
 import java.util.Optional;
-import poussecafe.doc.DocumentationItem;
 import poussecafe.domain.ValueObject;
 import poussecafe.source.model.Documentation;
 

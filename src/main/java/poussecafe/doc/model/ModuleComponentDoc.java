@@ -1,6 +1,5 @@
 package poussecafe.doc.model;
 
-import poussecafe.doc.DocumentationItem;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.domain.ValueObject;
 

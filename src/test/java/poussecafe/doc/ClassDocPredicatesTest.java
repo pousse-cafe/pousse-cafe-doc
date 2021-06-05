@@ -5,6 +5,7 @@ import javax.lang.model.util.Types;
 import jdk.javadoc.doclet.DocletEnvironment;
 import org.junit.Before;
 import org.junit.Test;
+import poussecafe.doc.doclet.ClassDocPredicates;
 import poussecafe.domain.DomainEvent;
 import poussecafe.messaging.Message;
 import poussecafe.runtime.Command;

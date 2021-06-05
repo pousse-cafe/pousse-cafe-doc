@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import poussecafe.doc.DocumentationItem;
 import poussecafe.domain.ValueObject;
 
 import static java.util.stream.Collectors.toList;

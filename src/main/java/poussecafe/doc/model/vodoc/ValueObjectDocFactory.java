@@ -1,7 +1,7 @@
 package poussecafe.doc.model.vodoc;
 
 import javax.lang.model.element.TypeElement;
-import poussecafe.doc.ClassDocPredicates;
+import poussecafe.doc.doclet.ClassDocPredicates;
 import poussecafe.doc.model.ComponentDocFactory;
 import poussecafe.doc.model.ModuleComponentDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocId;

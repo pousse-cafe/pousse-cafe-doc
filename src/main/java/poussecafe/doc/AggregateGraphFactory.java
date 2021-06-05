@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import poussecafe.doc.doclet.Logger;
 import poussecafe.doc.graph.Node;
 import poussecafe.doc.graph.NodeStyle;
 import poussecafe.doc.graph.UndirectedEdge;
