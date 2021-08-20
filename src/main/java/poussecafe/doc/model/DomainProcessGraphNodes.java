@@ -7,76 +7,38 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import poussecafe.doc.model.domainprocessdoc.Step;
-import poussecafe.doc.model.domainprocessdoc.StepName;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessGraphNode;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessGraphNodeName;
 import poussecafe.doc.model.domainprocessdoc.ToStep;
 
 import static java.util.stream.Collectors.toList;
 
-public class DomainProcessSteps {
+public class DomainProcessGraphNodes {
 
-    public static class Builder {
+    private Map<DomainProcessGraphNodeName, DomainProcessGraphNode> nodes;
 
-        private Map<StepName, Step> steps = new HashMap<>();
-
-        public Builder merge(Map<StepName, Step> stepsToBeMerged) {
-            for(Entry<StepName, Step> entry : stepsToBeMerged.entrySet()) {
-                Step existingStep = steps.get(entry.getKey());
-                if(existingStep == null) {
-                    steps.put(entry.getKey(), entry.getValue());
-                } else {
-                    steps.put(entry.getKey(), new Step.Builder()
-                            .step(existingStep)
-                            .tos(entry.getValue().tos())
-                            .build());
-                }
-            }
-            return this;
-        }
-
-        public Builder add(Step step) {
-            steps.put(step.stepName(), step);
-            return this;
-        }
-
-        public Step getStep(StepName stepName) {
-            return steps.get(stepName);
-        }
-
-        public DomainProcessSteps build() {
-            return new DomainProcessSteps(steps);
-        }
+    public Map<DomainProcessGraphNodeName, DomainProcessGraphNode> steps() {
+        return nodes;
     }
 
-    private DomainProcessSteps(Map<StepName, Step> steps) {
-        Objects.requireNonNull(steps);
-        this.steps = steps;
-    }
-
-    private Map<StepName, Step> steps;
-
-    public Map<StepName, Step> steps() {
-        return steps;
-    }
-
-    public List<Step> orderedSteps() {
+    public List<DomainProcessGraphNode> orderedSteps() {
         if(orderedSteps == null) {
             Map<String, List<String>> graph = buildGraphMap();
             List<String> orderedStepNames = topologicalOrdering(graph);
             orderedSteps = orderedStepNames
                     .stream()
-                    .map(StepName::new)
-                    .map(stepName -> steps.get(stepName))
+                    .map(DomainProcessGraphNodeName::new)
+                    .map(stepName -> nodes.get(stepName))
                     .collect(toList());
         }
         return orderedSteps;
     }
 
-    private List<Step> orderedSteps;
+    private List<DomainProcessGraphNode> orderedSteps;
 
     private Map<String, List<String>> buildGraphMap() {
         Map<String, List<String>> graph = new HashMap<>();
-        for(Step step : steps.values()) {
+        for(DomainProcessGraphNode step : nodes.values()) {
             if(!graph.containsKey(step.componentDoc().name())) {
                 graph.put(step.componentDoc().name(), new ArrayList<>());
             }
@@ -124,7 +86,45 @@ public class DomainProcessSteps {
         }
     }
 
-    public Step getStep(StepName name) {
-        return steps.get(name);
+    public DomainProcessGraphNode getStep(DomainProcessGraphNodeName name) {
+        return nodes.get(name);
+    }
+
+    public static class Builder {
+
+        private Map<DomainProcessGraphNodeName, DomainProcessGraphNode> steps = new HashMap<>();
+
+        public Builder merge(Map<DomainProcessGraphNodeName, DomainProcessGraphNode> stepsToBeMerged) {
+            for(Entry<DomainProcessGraphNodeName, DomainProcessGraphNode> entry : stepsToBeMerged.entrySet()) {
+                DomainProcessGraphNode existingStep = steps.get(entry.getKey());
+                if(existingStep == null) {
+                    steps.put(entry.getKey(), entry.getValue());
+                } else {
+                    steps.put(entry.getKey(), new DomainProcessGraphNode.Builder()
+                            .step(existingStep)
+                            .tos(entry.getValue().tos())
+                            .build());
+                }
+            }
+            return this;
+        }
+
+        public Builder add(DomainProcessGraphNode step) {
+            steps.put(step.stepName(), step);
+            return this;
+        }
+
+        public DomainProcessGraphNode getStep(DomainProcessGraphNodeName stepName) {
+            return steps.get(stepName);
+        }
+
+        public DomainProcessGraphNodes build() {
+            return new DomainProcessGraphNodes(steps);
+        }
+    }
+
+    private DomainProcessGraphNodes(Map<DomainProcessGraphNodeName, DomainProcessGraphNode> steps) {
+        Objects.requireNonNull(steps);
+        this.nodes = steps;
     }
 }

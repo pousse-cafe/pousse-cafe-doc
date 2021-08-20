@@ -73,7 +73,7 @@ public class AggregateGraphFactory {
     private Domain domain;
 
     private void addAggregateRelation(AggregateGraphPath path, Component toComponent) {
-        if(toComponent.className().equals(aggregateDoc.documentation().id())) {
+        if(toComponent.className().qualified().equals(aggregateDoc.documentation().id())) {
             return;
         }
 

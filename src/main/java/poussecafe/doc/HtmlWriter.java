@@ -1,7 +1,6 @@
 package poussecafe.doc;
 
 import freemarker.template.Configuration;
-import freemarker.template.Template;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -9,28 +8,26 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import org.apache.commons.io.IOUtils;
-import poussecafe.doc.doclet.PousseCafeDocletConfiguration;
 import poussecafe.doc.model.Aggregate;
 import poussecafe.doc.model.DocumentationItem;
 import poussecafe.doc.model.Domain;
-import poussecafe.doc.model.DomainProcessSteps;
-import poussecafe.doc.model.DomainProcessStepsFactory;
 import poussecafe.doc.model.Module;
 import poussecafe.doc.model.UbiquitousLanguageEntry;
 import poussecafe.doc.model.UbiquitousLanguageFactory;
-import poussecafe.doc.model.domainprocessdoc.Step;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessGraphNode;
 
+import static java.util.Objects.requireNonNull;
 import static java.util.stream.Collectors.toList;
 
 public class HtmlWriter {
 
     public void writeHtml(Domain domain) {
-        try(FileWriter stream = new FileWriter(new File(configuration.outputDirectory(), "index.html"))) {
+        try(var stream = new FileWriter(new File(outputDirectoryPath, "index.html"))) {
             copyCss();
 
-            Configuration freemarkerConfig = new Configuration(Configuration.VERSION_2_3_28);
+            var freemarkerConfig = new Configuration(Configuration.VERSION_2_3_28);
             freemarkerConfig.setClassForTemplateLoading(getClass(), "/");
-            Template template = freemarkerConfig.getTemplate("index.html");
+            var template = freemarkerConfig.getTemplate("index.html");
 
             HashMap<String, Object> domainMap = new HashMap<>();
             domainMap.put("name", domain.name());
@@ -45,7 +42,7 @@ public class HtmlWriter {
                                     .collect(toList()));
 
             HashMap<String, Object> model = new HashMap<>();
-            model.put("includeGenerationDate", configuration.includeGenerationDate());
+            model.put("includeGenerationDate", includeGenerationDate);
             model.put("domain", domainMap);
             model.put("generationDate", new Date());
             model.put("ubiquitousLanguage",
@@ -61,7 +58,9 @@ public class HtmlWriter {
         }
     }
 
-    private PousseCafeDocletConfiguration configuration;
+    private String outputDirectoryPath;
+
+    private boolean includeGenerationDate;
 
     private int compareModules(Module moduleDoc1, Module moduleDoc2) {
         DocumentationItem doc1 = moduleDoc1.documentation();
@@ -147,7 +146,7 @@ public class HtmlWriter {
         view.put("name", domainProcessDoc.name());
         view.put("description", domainProcessDoc.description().description().orElse(""));
 
-        DomainProcessSteps domainProcessSteps = domainProcessStepsFactory.buildDomainProcessSteps(domainProcessDoc,
+        var domainProcessSteps = DomainProcessStepsFactory.buildDomainProcessGraphNodes(domainProcessDoc,
                 domain);
         view.put("steps", domainProcessSteps.orderedSteps().stream()
                 .filter(step -> !step.componentDoc().description().trivial())
@@ -158,9 +157,7 @@ public class HtmlWriter {
         return view;
     }
 
-    private DomainProcessStepsFactory domainProcessStepsFactory;
-
-    private HashMap<String, Object> adapt(Step step) {
+    private HashMap<String, Object> adapt(DomainProcessGraphNode step) {
         HashMap<String, Object> view = new HashMap<>();
         view.put("name", step.componentDoc().name());
         view.put("description", step.componentDoc().description().description().orElse(""));
@@ -178,8 +175,32 @@ public class HtmlWriter {
     private void copyCss()
             throws IOException {
         IOUtils.copy(getClass().getResourceAsStream("/style.css"),
-                        new FileOutputStream(new File(configuration.outputDirectory(), "style.css")));
+                        new FileOutputStream(new File(outputDirectoryPath, "style.css")));
     }
 
-    private UbiquitousLanguageFactory ubitquitousLanguageFactory;
+    private UbiquitousLanguageFactory ubitquitousLanguageFactory = new UbiquitousLanguageFactory();
+
+    public static class Builder {
+
+        public HtmlWriter build() {
+            requireNonNull(writer.outputDirectoryPath);
+            return writer;
+        }
+
+        private HtmlWriter writer = new HtmlWriter();
+
+        public Builder outputDirectoryPath(String outputDirectoryPath) {
+            writer.outputDirectoryPath = outputDirectoryPath;
+            return this;
+        }
+
+        public Builder includeGenerationDate(boolean includeGenerationDate) {
+            writer.includeGenerationDate = includeGenerationDate;
+            return this;
+        }
+    }
+
+    private HtmlWriter() {
+
+    }
 }

@@ -9,32 +9,30 @@ import poussecafe.doc.graph.Node;
 import poussecafe.doc.graph.NodeStyle;
 import poussecafe.doc.model.DocumentationItem;
 import poussecafe.doc.model.Domain;
-import poussecafe.doc.model.DomainProcessSteps;
-import poussecafe.doc.model.DomainProcessStepsFactory;
-import poussecafe.doc.model.domainprocessdoc.Step;
+import poussecafe.doc.model.domainprocessdoc.DomainProcessGraphNode;
 import poussecafe.doc.model.domainprocessdoc.ToStep;
 
 public class DomainProcessGraphFactory {
 
     public DirectedGraph buildGraph() {
         Logger.info("Building graph for process {}", domainProcessDoc.name());
-        DirectedGraph graph = new DirectedGraph();
-        DomainProcessSteps steps = domainProcessStepsFactory.buildDomainProcessSteps(domainProcessDoc, domain);
-        for(Step step : steps.orderedSteps()) {
-            if(step.external()) {
-                Node node = Node.box(step.componentDoc().name());
+        var graph = new DirectedGraph();
+        var nodes = DomainProcessStepsFactory.buildDomainProcessGraphNodes(domainProcessDoc, domain);
+        for(DomainProcessGraphNode domainProcessGraphNode : nodes.orderedSteps()) {
+            if(domainProcessGraphNode.external()) {
+                var node = Node.box(domainProcessGraphNode.componentDoc().name());
                 node.setStyle(Optional.of(NodeStyle.DASHED));
                 graph.getNodesAndEdges().addNode(node);
             } else {
-                graph.getNodesAndEdges().addNode(Node.ellipse(step.componentDoc().name()));
+                graph.getNodesAndEdges().addNode(Node.ellipse(domainProcessGraphNode.componentDoc().name()));
             }
-            for(ToStep to : step.tos()) {
-                Step stepTo = steps.getStep(to.name());
+            for(ToStep to : domainProcessGraphNode.tos()) {
+                DomainProcessGraphNode stepTo = nodes.getStep(to.name());
                 DirectedEdge edge;
                 if(to.directly()) {
-                    edge = DirectedEdge.solidEdge(step.componentDoc().name(), to.name().stringValue());
+                    edge = DirectedEdge.solidEdge(domainProcessGraphNode.componentDoc().name(), to.name().stringValue());
                 } else {
-                    edge = DirectedEdge.dashedEdge(step.componentDoc().name(), to.name().stringValue());
+                    edge = DirectedEdge.dashedEdge(domainProcessGraphNode.componentDoc().name(), to.name().stringValue());
                 }
 
                 Optional<String> consumedEvent = stepTo.consumedEvent();
@@ -52,8 +50,6 @@ public class DomainProcessGraphFactory {
 
     private Domain domain;
 
-    private DomainProcessStepsFactory domainProcessStepsFactory;
-
     public static class Builder {
 
         private DomainProcessGraphFactory factory = new DomainProcessGraphFactory();
@@ -68,15 +64,9 @@ public class DomainProcessGraphFactory {
             return this;
         }
 
-        public Builder domainProcessStepsFactory(DomainProcessStepsFactory domainProcessStepsFactory) {
-            factory.domainProcessStepsFactory = domainProcessStepsFactory;
-            return this;
-        }
-
         public DomainProcessGraphFactory build() {
             Objects.requireNonNull(factory.domainProcessDoc);
             Objects.requireNonNull(factory.domain);
-            Objects.requireNonNull(factory.domainProcessStepsFactory);
             return factory;
         }
     }

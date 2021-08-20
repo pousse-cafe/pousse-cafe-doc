@@ -34,8 +34,8 @@ public class DomainFactory implements Service {
 
     public Domain buildDomain() {
         return new Domain.Builder()
-                .name(configuration.domainName())
-                .version(configuration.version())
+                .name(configuration.generationConfiguration().domainName())
+                .version(configuration.generationConfiguration().version())
                 .modules(modules())
                 .relations(relations())
                 .build();
@@ -78,7 +78,6 @@ public class DomainFactory implements Service {
                 .documentation(aggregateDoc.toDocumentationItem())
                 .entities(entities(aggregateDoc))
                 .valueObjects(valueObjects(aggregateDoc))
-                .processSteps(processSteps(aggregateDoc))
                 .build();
     }
 
@@ -146,14 +145,6 @@ public class DomainFactory implements Service {
 
     private ValueObjectDocRepository valueObjectDocRepository;
 
-    private List<DocumentationItem> processSteps(AggregateDoc aggregateDoc) {
-        return processStepDocRepository.findByAggregateDocId(aggregateDoc.attributes().identifier().value()).stream()
-                .map(ProcessStepDoc::toDocumentationItem)
-                .collect(toList());
-    }
-
-    private ProcessStepDocRepository processStepDocRepository;
-
     private List<ServiceDoc> services(ModuleDoc moduleDoc) {
         return serviceDocRepository.findByModuleId(moduleDoc.attributes().identifier().value());
     }
@@ -173,6 +164,8 @@ public class DomainFactory implements Service {
                 .map(ProcessStepDoc::toMessageListener)
                 .collect(toList());
     }
+
+    private ProcessStepDocRepository processStepDocRepository;
 
     private List<Relation> relations() {
         return relationDocRepository.findAll().stream()

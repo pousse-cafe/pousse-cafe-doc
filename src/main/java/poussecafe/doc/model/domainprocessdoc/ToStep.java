@@ -10,7 +10,7 @@ public class ToStep {
 
         private ToStep toStep = new ToStep();
 
-        public Builder name(StepName name) {
+        public Builder name(DomainProcessGraphNodeName name) {
             toStep.name = name;
             return this;
         }
@@ -29,9 +29,9 @@ public class ToStep {
 
     }
 
-    private StepName name;
+    private DomainProcessGraphNodeName name;
 
-    public StepName name() {
+    public DomainProcessGraphNodeName name() {
         return name;
     }
 

@@ -17,6 +17,7 @@ import poussecafe.doc.doclet.PousseCafeDocletConfiguration;
 import poussecafe.doc.doclet.PousseCafeDocletExecutor;
 import poussecafe.files.Difference;
 import poussecafe.files.DifferenceType;
+import poussecafe.source.analysis.SourceModelBuilder;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertTrue;
@@ -25,36 +26,71 @@ import static org.junit.Assume.assumeTrue;
 
 public class PousseCafeDocTest {
 
+    @Test
+    public void generatesExpectedDoc() throws IOException {
+        givenBasePackage("poussecafe.sample.test");
+        givenGeneratorConfiguration();
+        givenEmptyOutputDirectory();
+        whenExecutingGenerator();
+        thenGeneratedDocContainsExpectedData("expected-doc-test");
+    }
+
+    private void givenBasePackage(String value) {
+        basePackage = value;
+    }
+
+    private String basePackage;
+
+    private void givenGeneratorConfiguration() {
+        generationConfiguration = PousseCafeDocGenerationConfiguration.builder()
+                .domainName("Pousse-Café Doc")
+                .outputDirectory(System.getProperty("java.io.tmpdir") + "/" + basePackage)
+                .pdfFileName("domain.pdf")
+                .version("Test")
+                .includeGenerationDate(false)
+                .customDotExecutable(Optional.of("dot"))
+                .customFdpExecutable(Optional.of("fdp"))
+                .build();
+    }
+
+    private PousseCafeDocGenerationConfiguration generationConfiguration;
+
+    private void whenExecutingGenerator() throws IOException {
+        var builder = new SourceModelBuilder();
+        builder.includeTree(Path.of(System.getProperty("user.dir") + "/src/test/java/", basePackage.replace('.', '/')));
+        var generator = PousseCafeDocGenerator.builder()
+            .configuration(generationConfiguration)
+            .model(builder.build())
+            .build();
+        generator.generate();
+    }
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     public void docletGeneratesExpectedDoc() {
-        givenDocletConfiguration("poussecafe.sample.test");
+        givenBasePackage("poussecafe.sample.test");
+        givenDocletConfiguration();
         givenEmptyOutputDirectory();
         whenExecutingDoclet();
         thenGeneratedDocContainsExpectedData("expected-doc-test");
     }
 
-    private void givenDocletConfiguration(String basePackage) {
-        configuration = new PousseCafeDocletConfiguration.Builder()
-                .domainName("Pousse-Café Doc")
-                .version("Test")
-                .sourcePath(asList(System.getProperty("user.dir") + "/src/test/java/"))
-                .outputDirectory(System.getProperty("java.io.tmpdir") + "/" + basePackage)
-                .pdfFileName("domain.pdf")
+    private void givenDocletConfiguration() {
+        givenGeneratorConfiguration();
+        configuration = PousseCafeDocletConfiguration.builder()
+                .generationConfiguration(generationConfiguration)
                 .basePackage(basePackage)
-                .includeGenerationDate(false)
-                .customDotExecutable(Optional.of("dot"))
-                .customFdpExecutable(Optional.of("fdp"))
+                .sourcePath(asList(System.getProperty("user.dir") + "/src/test/java/"))
                 .build();
-        assumeTrue(executableInstalled("dot", configuration.customDotExecutable().orElseThrow()));
-        assumeTrue(executableInstalled("fdp", configuration.customFdpExecutable().orElseThrow()));
+        assumeTrue(executableInstalled("dot", configuration.generationConfiguration().customDotExecutable().orElseThrow()));
+        assumeTrue(executableInstalled("fdp", configuration.generationConfiguration().customFdpExecutable().orElseThrow()));
     }
 
     private PousseCafeDocletConfiguration configuration;
 
     private void givenEmptyOutputDirectory() {
-        File outputDirectory = new File(configuration.outputDirectory());
+        File outputDirectory = new File(generationConfiguration.outputDirectory());
         new File(outputDirectory, "index.html").delete();
     }
 
@@ -64,7 +100,7 @@ public class PousseCafeDocTest {
 
     private void thenGeneratedDocContainsExpectedData(String expectedDocFolder) {
         Path expectedDocDirectory = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", expectedDocFolder);
-        Path targetDirectory = Paths.get(configuration.outputDirectory());
+        Path targetDirectory = Paths.get(generationConfiguration.outputDirectory());
         try {
             assertDifferences(poussecafe.files.Tree.compareTrees(targetDirectory, expectedDocDirectory, ".dot"));
         } catch (IOException e) {
@@ -112,7 +148,8 @@ public class PousseCafeDocTest {
 
     @Test
     public void docletGeneratesExpectedDocUsingDeprecated() {
-        givenDocletConfiguration("poussecafe.sample.test_deprecated");
+        givenBasePackage("poussecafe.sample.test_deprecated");
+        givenDocletConfiguration();
         givenEmptyOutputDirectory();
         whenExecutingDoclet();
         thenGeneratedDocContainsExpectedData("expected-doc-test-deprecated");

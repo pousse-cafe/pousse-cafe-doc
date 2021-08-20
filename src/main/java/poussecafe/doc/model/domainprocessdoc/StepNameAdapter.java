@@ -2,15 +2,15 @@ package poussecafe.doc.model.domainprocessdoc;
 
 import poussecafe.attribute.adapters.DataAdapter;
 
-public class StepNameAdapter implements DataAdapter<String, StepName> {
+public class StepNameAdapter implements DataAdapter<String, DomainProcessGraphNodeName> {
 
     @Override
-    public StepName adaptGet(String storedValue) {
-        return new StepName(storedValue);
+    public DomainProcessGraphNodeName adaptGet(String storedValue) {
+        return new DomainProcessGraphNodeName(storedValue);
     }
 
     @Override
-    public String adaptSet(StepName valueToStore) {
+    public String adaptSet(DomainProcessGraphNodeName valueToStore) {
         return valueToStore.stringValue();
     }
 

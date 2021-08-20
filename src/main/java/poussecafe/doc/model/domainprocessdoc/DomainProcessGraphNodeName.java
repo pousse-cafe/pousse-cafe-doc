@@ -3,13 +3,13 @@ package poussecafe.doc.model.domainprocessdoc;
 import poussecafe.doc.model.processstepdoc.StepMethodSignature;
 import poussecafe.util.StringId;
 
-public class StepName extends StringId {
+public class DomainProcessGraphNodeName extends StringId {
 
-    public StepName(String value) {
+    public DomainProcessGraphNodeName(String value) {
         super(value);
     }
 
-    public StepName(StepMethodSignature signature) {
+    public DomainProcessGraphNodeName(StepMethodSignature signature) {
         super(signature.toString());
     }
 }

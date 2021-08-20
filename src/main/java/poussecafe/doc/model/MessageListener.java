@@ -34,10 +34,15 @@ public class MessageListener {
 
     private Set<NameRequired> producedEvents = new HashSet<>();
 
+    @Deprecated
     public List<String> toExternals() {
         return Collections.unmodifiableList(toExternals);
     }
 
+    /**
+     * @deprecated replaced by toExternalsByEvent
+     */
+    @Deprecated
     private List<String> toExternals = new ArrayList<>();
 
     public Map<NameRequired, List<String>> toExternalsByEvent() {
@@ -88,6 +93,7 @@ public class MessageListener {
             return this;
         }
 
+        @Deprecated
         public Builder toExternals(Collection<String> toExternals) {
             listener.toExternals.addAll(toExternals);
             return this;

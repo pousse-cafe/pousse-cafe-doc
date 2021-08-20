@@ -42,7 +42,7 @@ public class DocumentationItem {
         return description.shortDescription()
                 .or(description::description)
                 .map(string -> string.replaceAll("<[a-z\\/]+>", ""))
-                .orElseThrow();
+                .orElse("");
     }
 
     public static class Builder {

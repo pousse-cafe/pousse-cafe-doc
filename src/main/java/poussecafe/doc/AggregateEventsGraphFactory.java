@@ -16,13 +16,12 @@ import poussecafe.doc.model.Domain;
 import poussecafe.doc.model.MessageListener;
 import poussecafe.doc.model.processstepdoc.NameRequired;
 import poussecafe.doc.model.processstepdoc.StepMethodSignature;
-import poussecafe.domain.Service;
 
 import static java.util.stream.Collectors.toList;
 
-public class AggregateEventsGraphFactory implements Service {
+public class AggregateEventsGraphFactory {
 
-    public DirectedGraph buildGraph(
+    public static DirectedGraph buildGraph(
             Aggregate aggregate,
             Domain domain) {
         DocumentationItem aggregateDoc = aggregate.documentation();
@@ -120,5 +119,9 @@ public class AggregateEventsGraphFactory implements Service {
         }
 
         return graph;
+    }
+
+    private AggregateEventsGraphFactory() {
+
     }
 }

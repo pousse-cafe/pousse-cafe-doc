@@ -8,11 +8,39 @@ import java.util.Optional;
 import poussecafe.doc.model.DocumentationItem;
 import poussecafe.domain.ValueObject;
 
-public class Step implements ValueObject {
+public class DomainProcessGraphNode implements ValueObject {
+
+    private DocumentationItem componentDoc;
+
+    public DocumentationItem componentDoc() {
+        return componentDoc;
+    }
+
+    private List<ToStep> tos = new ArrayList<>();
+
+    public List<ToStep> tos() {
+        return Collections.unmodifiableList(tos);
+    }
+
+    private String consumedEvent;
+
+    public Optional<String> consumedEvent() {
+        return Optional.ofNullable(consumedEvent);
+    }
+
+    private boolean external;
+
+    public boolean external() {
+        return external;
+    }
+
+    public DomainProcessGraphNodeName stepName() {
+        return new DomainProcessGraphNodeName(componentDoc.name());
+    }
 
     public static class Builder {
 
-        private Step step = new Step();
+        private DomainProcessGraphNode step = new DomainProcessGraphNode();
 
         public Builder componentDoc(DocumentationItem componentDoc) {
             step.componentDoc = componentDoc;
@@ -44,7 +72,7 @@ public class Step implements ValueObject {
             return this;
         }
 
-        public Builder step(Step otherStep) {
+        public Builder step(DomainProcessGraphNode otherStep) {
             step.componentDoc = otherStep.componentDoc;
             step.tos.addAll(otherStep.tos);
             step.consumedEvent = otherStep.consumedEvent;
@@ -52,41 +80,13 @@ public class Step implements ValueObject {
             return this;
         }
 
-        public Step build() {
+        public DomainProcessGraphNode build() {
             Objects.requireNonNull(step.componentDoc);
             return step;
         }
     }
 
-    private Step() {
+    private DomainProcessGraphNode() {
 
-    }
-
-    private DocumentationItem componentDoc;
-
-    public DocumentationItem componentDoc() {
-        return componentDoc;
-    }
-
-    private List<ToStep> tos = new ArrayList<>();
-
-    public List<ToStep> tos() {
-        return Collections.unmodifiableList(tos);
-    }
-
-    private String consumedEvent;
-
-    public Optional<String> consumedEvent() {
-        return Optional.ofNullable(consumedEvent);
-    }
-
-    private boolean external;
-
-    public boolean external() {
-        return external;
-    }
-
-    public StepName stepName() {
-        return new StepName(componentDoc.name());
     }
 }

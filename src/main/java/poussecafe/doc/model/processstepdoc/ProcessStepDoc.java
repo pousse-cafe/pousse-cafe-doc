@@ -25,6 +25,7 @@ public class ProcessStepDoc extends AggregateRoot<ProcessStepDocId, ProcessStepD
                 .build();
     }
 
+    @SuppressWarnings("deprecation")
     public MessageListener toMessageListener() {
         return new MessageListener.Builder()
                 .documentation(toDocumentationItem())

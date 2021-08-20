@@ -14,6 +14,7 @@ import poussecafe.doc.GraphImagesWriter;
 import poussecafe.doc.HtmlWriter;
 import poussecafe.doc.PdfWriter;
 import poussecafe.doc.PousseCafeDocBundle;
+import poussecafe.doc.PousseCafeDocGenerationConfiguration;
 import poussecafe.doc.doclet.options.BasePackageOption;
 import poussecafe.doc.doclet.options.CustomDotExecutableOption;
 import poussecafe.doc.doclet.options.CustomFdpExecutableOption;
@@ -33,10 +34,13 @@ import poussecafe.runtime.Runtime;
 public class PousseCafeDoclet implements Doclet {
 
     public PousseCafeDoclet() {
-        configBuilder = new PousseCafeDocletConfiguration.Builder();
+        docletConfigBuilder = PousseCafeDocletConfiguration.builder();
+        generatorConfigBuilder = PousseCafeDocGenerationConfiguration.builder();
     }
 
-    private PousseCafeDocletConfiguration.Builder configBuilder;
+    private PousseCafeDocletConfiguration.BaseBuilder docletConfigBuilder;
+
+    private PousseCafeDocGenerationConfiguration.Builder generatorConfigBuilder;
 
     private Runtime runtime;
 
@@ -54,15 +58,17 @@ public class PousseCafeDoclet implements Doclet {
     @Override
     public Set<? extends Option> getSupportedOptions() {
         Set<Option> supportedOptions = new HashSet<>();
-        supportedOptions.add(new BasePackageOption(configBuilder));
-        supportedOptions.add(new DomainOption(configBuilder));
-        supportedOptions.add(new IncludeGeneratedDateOption(configBuilder));
-        supportedOptions.add(new OutputPathOption(configBuilder));
-        supportedOptions.add(new VersionOption(configBuilder));
-        supportedOptions.add(new SourcePathOption(configBuilder));
-        supportedOptions.add(new CustomDotExecutableOption(configBuilder));
-        supportedOptions.add(new CustomFdpExecutableOption(configBuilder));
-        supportedOptions.add(new PdfFileNameOption(configBuilder));
+        supportedOptions.add(new DomainOption(generatorConfigBuilder));
+        supportedOptions.add(new IncludeGeneratedDateOption(generatorConfigBuilder));
+        supportedOptions.add(new OutputPathOption(generatorConfigBuilder));
+        supportedOptions.add(new VersionOption(generatorConfigBuilder));
+        supportedOptions.add(new CustomDotExecutableOption(generatorConfigBuilder));
+        supportedOptions.add(new CustomFdpExecutableOption(generatorConfigBuilder));
+        supportedOptions.add(new PdfFileNameOption(generatorConfigBuilder));
+
+        supportedOptions.add(new BasePackageOption(docletConfigBuilder));
+        supportedOptions.add(new SourcePathOption(docletConfigBuilder));
+
         return supportedOptions;
     }
 
@@ -74,7 +80,8 @@ public class PousseCafeDoclet implements Doclet {
     @Override
     public boolean run(DocletEnvironment environment) {
         this.environment = environment;
-        configuration = configBuilder.build();
+        docletConfigBuilder.generationConfiguration(generatorConfigBuilder.build());
+        configuration = docletConfigBuilder.build();
 
         runtime = new Runtime.Builder()
                 .withBundle(PousseCafeDocBundle.configure().defineAndImplementDefault().build())
@@ -197,29 +204,29 @@ public class PousseCafeDoclet implements Doclet {
     }
 
     private void createOutputFolder() {
-        var outputDirectory = new File(configuration.outputDirectory());
+        var outputDirectory = new File(configuration.generationConfiguration().outputDirectory());
         outputDirectory.mkdirs();
     }
 
     private void writeGraphs(Domain domain) {
-        GraphImagesWriter graphsWriter = new GraphImagesWriter.Builder()
-                .outputDirectoryPath(configuration.outputDirectory())
-                .customDotExecutable(configuration.customDotExecutable())
-                .customFdpExecutable(configuration.customFdpExecutable())
+        GraphImagesWriter graphsWriter = GraphImagesWriter.builder()
+                .customDotExecutable(configuration.generationConfiguration().customDotExecutable())
+                .customFdpExecutable(configuration.generationConfiguration().customFdpExecutable())
+                .outputDirectoryPath(configuration.generationConfiguration().outputDirectory())
                 .build();
-        runtime.injector().injectDependenciesInto(graphsWriter);
         graphsWriter.writeImages(domain);
     }
 
     private void writeHtml(Domain domain) {
-        var htmlWriter = new HtmlWriter();
-        runtime.injector().injectDependenciesInto(htmlWriter);
+        var htmlWriter = new HtmlWriter.Builder()
+                .includeGenerationDate(configuration.generationConfiguration().includeGenerationDate())
+                .outputDirectoryPath(configuration.generationConfiguration().outputDirectory())
+                .build();
         htmlWriter.writeHtml(domain);
     }
 
     private void writePdf() {
-        var pdfWriter = new PdfWriter();
-        runtime.injector().injectDependenciesInto(pdfWriter);
+        var pdfWriter = new PdfWriter(configuration.generationConfiguration());
         pdfWriter.writePdf();
     }
 }

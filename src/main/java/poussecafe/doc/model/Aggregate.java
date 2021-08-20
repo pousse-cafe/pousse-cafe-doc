@@ -25,16 +25,10 @@ public class Aggregate {
             return this;
         }
 
-        public Builder processSteps(List<DocumentationItem> processSteps) {
-            aggregate.processSteps = new ArrayList<>(processSteps);
-            return this;
-        }
-
         public Aggregate build() {
             Objects.requireNonNull(aggregate.documentation);
             Objects.requireNonNull(aggregate.entities);
             Objects.requireNonNull(aggregate.valueObjects);
-            Objects.requireNonNull(aggregate.processSteps);
             return aggregate;
         }
     }
@@ -59,11 +53,5 @@ public class Aggregate {
 
     public List<DocumentationItem> valueObjects() {
         return valueObjects;
-    }
-
-    private List<DocumentationItem> processSteps;
-
-    public List<DocumentationItem> processSteps() {
-        return processSteps;
     }
 }

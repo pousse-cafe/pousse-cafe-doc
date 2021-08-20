@@ -1,8 +1,11 @@
 package poussecafe.doc.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.doc.model.relationdoc.Component;
 
 import static java.util.Objects.requireNonNull;
+import static poussecafe.util.Equality.referenceEquals;
 
 public class Relation {
 
@@ -41,5 +44,21 @@ public class Relation {
 
     private Relation() {
 
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(from, other.from)
+                .append(to, other.to)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(from)
+                .append(to)
+                .build();
     }
 }

@@ -4,18 +4,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import jdk.javadoc.doclet.Doclet.Option;
-import poussecafe.doc.doclet.PousseCafeDocletConfiguration;
+import poussecafe.doc.PousseCafeDocGenerationConfiguration;
 
 import static java.util.Arrays.asList;
 
 public class CustomDotExecutableOption implements Option {
 
-    public CustomDotExecutableOption(PousseCafeDocletConfiguration.Builder configBuilder) {
+    public CustomDotExecutableOption(PousseCafeDocGenerationConfiguration.Builder configBuilder) {
         Objects.requireNonNull(configBuilder);
         this.configBuilder = configBuilder;
     }
 
-    private PousseCafeDocletConfiguration.Builder configBuilder;
+    private PousseCafeDocGenerationConfiguration.Builder configBuilder;
 
     @Override
     public int getArgumentCount() {

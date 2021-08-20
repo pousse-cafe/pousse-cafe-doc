@@ -1,15 +1,15 @@
-package poussecafe.doc.model;
+package poussecafe.doc;
 
-import poussecafe.doc.AggregateGraphFactory;
-import poussecafe.doc.DomainProcessGraphFactory;
-import poussecafe.doc.ModuleGraphFactory;
 import poussecafe.doc.graph.DirectedGraph;
 import poussecafe.doc.graph.UndirectedGraph;
-import poussecafe.domain.Service;
+import poussecafe.doc.model.Aggregate;
+import poussecafe.doc.model.DocumentationItem;
+import poussecafe.doc.model.Domain;
+import poussecafe.doc.model.Module;
 
-public class GraphFactory implements Service {
+public class GraphFactory {
 
-    public UndirectedGraph buildModuleGraph(
+    public static UndirectedGraph buildModuleGraph(
             Module moduleDoc,
             Domain domain) {
         return new ModuleGraphFactory.Builder()
@@ -19,7 +19,7 @@ public class GraphFactory implements Service {
                 .buildGraph();
     }
 
-    public UndirectedGraph buildAggregateGraph(
+    public static UndirectedGraph buildAggregateGraph(
             Aggregate aggregateDoc,
             Domain domain) {
         return new AggregateGraphFactory.Builder()
@@ -29,14 +29,15 @@ public class GraphFactory implements Service {
                 .buildGraph();
     }
 
-    public DirectedGraph buildDomainProcessGraph(DocumentationItem domainProcessDoc, Domain domain) {
+    public static DirectedGraph buildDomainProcessGraph(DocumentationItem domainProcessDoc, Domain domain) {
         return new DomainProcessGraphFactory.Builder()
                 .domainProcessDoc(domainProcessDoc)
-                .domainProcessStepsFactory(domainProcessStepsFactory)
                 .domain(domain)
                 .build()
                 .buildGraph();
     }
 
-    private DomainProcessStepsFactory domainProcessStepsFactory;
+    private GraphFactory() {
+
+    }
 }

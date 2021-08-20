@@ -1,9 +1,12 @@
 package poussecafe.doc.model.relationdoc;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import poussecafe.domain.ValueObject;
 import poussecafe.source.analysis.ClassName;
 
 import static java.util.Objects.requireNonNull;
+import static poussecafe.util.Equality.referenceEquals;
 
 public class Component implements ValueObject {
 
@@ -33,4 +36,22 @@ public class Component implements ValueObject {
     }
 
     private String name;
+
+    @Override
+    public boolean equals(Object obj) {
+        return referenceEquals(this, obj).orElse(other -> new EqualsBuilder()
+                .append(type, other.type)
+                .append(className, other.className)
+                .append(name, other.name)
+                .build());
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(type)
+                .append(className)
+                .append(name)
+                .build();
+    }
 }

@@ -17,19 +17,26 @@ public class Logger {
     private static Reporter rootDoc;
 
     public static void debug(String message, Object... args) {
-        log(message, text -> rootDoc.print(Kind.OTHER, text), args);
+        log(message, text -> reporter().print(Kind.OTHER, text), args);
     }
 
     public static void warn(String message, Object... args) {
-        log(message, text -> rootDoc.print(Kind.WARNING, text), args);
+        log(message, text -> reporter().print(Kind.WARNING, text), args);
     }
 
     public static void error(String message, Object... args) {
-        log(message, text -> rootDoc.print(Kind.ERROR, text), args);
+        log(message, text -> reporter().print(Kind.ERROR, text), args);
     }
 
     public static void info(String message, Object...args) {
-        log(message, text -> rootDoc.print(Kind.NOTE, text), args);
+        log(message, text -> reporter().print(Kind.NOTE, text), args);
+    }
+
+    private static Reporter reporter() {
+        if(rootDoc == null) {
+            rootDoc = new Log4jReporter();
+        }
+        return rootDoc;
     }
 
     private static void log(String message, Consumer<String> logger, Object...args) {

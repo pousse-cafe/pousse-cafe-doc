@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import javax.tools.DocumentationTool;
 import javax.tools.DocumentationTool.DocumentationTask;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
@@ -29,7 +28,7 @@ public class PousseCafeDocletExecutor {
         addStandardOptionsTo(javadocArgs);
         addDocletOptionsTo(javadocArgs);
 
-        DocumentationTool documentationTool = ToolProvider.getSystemDocumentationTool();
+        var documentationTool = ToolProvider.getSystemDocumentationTool();
         JavaFileManager fileManager = documentationTool.getStandardFileManager(null, null, null);
         try {
             Iterable<JavaFileObject> compilationUnits = fileManager.list(StandardLocation.SOURCE_PATH, configuration.basePackage(), asSet(Kind.SOURCE), true);
@@ -42,7 +41,7 @@ public class PousseCafeDocletExecutor {
 
     private void addStandardOptionsTo(List<String> javadocArgs) {
         String pathElementSeparator = SystemDependentInformation.pathElementSeparator();
-        javadocArgs.add("-sourcepath"); javadocArgs.add(configuration.sourceDirectory().stream().collect(joining(pathElementSeparator)));
+        javadocArgs.add("-sourcepath"); javadocArgs.add(configuration.sourcePath().stream().collect(joining(pathElementSeparator)));
         javadocArgs.add("-subpackages"); javadocArgs.add(configuration.basePackage());
         if(!configuration.classPath().isEmpty()) {
             javadocArgs.add("-classpath"); javadocArgs.add(configuration.classPath().stream().collect(joining(pathElementSeparator)));
@@ -50,19 +49,22 @@ public class PousseCafeDocletExecutor {
     }
 
     private void addDocletOptionsTo(List<String> javadocArgs) {
-        javadocArgs.add("-output"); javadocArgs.add(configuration.outputDirectory());
-        javadocArgs.add("-pdfFile"); javadocArgs.add(configuration.pdfFileName());
-        javadocArgs.add("-domain"); javadocArgs.add(configuration.domainName());
-        javadocArgs.add("-version"); javadocArgs.add(configuration.version());
+        var generationConfiguration = configuration.generationConfiguration();
+        javadocArgs.add("-output"); javadocArgs.add(generationConfiguration.outputDirectory());
+        javadocArgs.add("-pdfFile"); javadocArgs.add(generationConfiguration.pdfFileName());
+        javadocArgs.add("-domain"); javadocArgs.add(generationConfiguration.domainName());
+        javadocArgs.add("-version"); javadocArgs.add(generationConfiguration.version());
         javadocArgs.add("-basePackage"); javadocArgs.add(configuration.basePackage());
-        if(configuration.includeGenerationDate()) {
+        if(generationConfiguration.includeGenerationDate()) {
             javadocArgs.add("-includeGeneratedDate");
         }
-        if(configuration.customDotExecutable().isPresent()) {
-            javadocArgs.add("-customDotExecutable"); javadocArgs.add(configuration.customDotExecutable().orElseThrow());
+        var customDotExecutable = generationConfiguration.customDotExecutable();
+        if(customDotExecutable.isPresent()) {
+            javadocArgs.add("-customDotExecutable"); javadocArgs.add(customDotExecutable.orElseThrow());
         }
-        if(configuration.customFdpExecutable().isPresent()) {
-            javadocArgs.add("-customFdpExecutable"); javadocArgs.add(configuration.customFdpExecutable().orElseThrow());
+        var customFdpExecutable = generationConfiguration.customFdpExecutable();
+        if(customFdpExecutable.isPresent()) {
+            javadocArgs.add("-customFdpExecutable"); javadocArgs.add(customFdpExecutable.orElseThrow());
         }
     }
 }

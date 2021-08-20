@@ -9,12 +9,12 @@ import static java.util.Arrays.asList;
 
 public class BasePackageOption implements Option {
 
-    public BasePackageOption(PousseCafeDocletConfiguration.Builder configBuilder) {
+    public BasePackageOption(PousseCafeDocletConfiguration.BaseBuilder configBuilder) {
         Objects.requireNonNull(configBuilder);
         this.configBuilder = configBuilder;
     }
 
-    private PousseCafeDocletConfiguration.Builder configBuilder;
+    private PousseCafeDocletConfiguration.BaseBuilder configBuilder;
 
     @Override
     public int getArgumentCount() {
