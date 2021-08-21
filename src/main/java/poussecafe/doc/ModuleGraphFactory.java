@@ -50,11 +50,11 @@ public class ModuleGraphFactory {
 
     private class ExplorationState {
 
-        Set<ClassName> exploredComponends = new HashSet<>();
+        Set<ClassName> exploredComponents = new HashSet<>();
     }
 
     private void addAggregateRelations(Aggregate aggregateDoc, ClassName fromClassName, ExplorationState explorationState) {
-        explorationState.exploredComponends.add(fromClassName);
+        explorationState.exploredComponents.add(fromClassName);
         for(Relation relation : findRelationsWithFromClassName(fromClassName)) {
             if(relation.to().type() == ComponentType.AGGREGATE) {
                 Aggregate otherAggregate = aggregateWithClass(relation.to().className());
@@ -63,7 +63,7 @@ public class ModuleGraphFactory {
                             .solidEdge(aggregateDoc.documentation().name(), relation.to().name());
                     graph.getNodesAndEdges().addEdge(edge);
                 }
-            } else if(!explorationState.exploredComponends.contains(relation.to().className())) {
+            } else if(!explorationState.exploredComponents.contains(relation.to().className())) {
                 addAggregateRelations(aggregateDoc, relation.to().className(), explorationState);
             }
         }

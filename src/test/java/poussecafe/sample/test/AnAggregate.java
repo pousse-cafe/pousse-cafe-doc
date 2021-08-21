@@ -15,7 +15,7 @@ import poussecafe.domain.EntityAttributes;
 @Aggregate
 public class AnAggregate {
 
-    public static class actory extends AggregateFactory<AnAggregateRootId, Root, Root.Attributes> {
+    public static class Factory extends AggregateFactory<AnAggregateRootId, Root, Root.Attributes> {
 
     }
 
@@ -45,7 +45,7 @@ public class AnAggregate {
         }
     }
 
-    public class AnAggregateRootRepository extends AggregateRepository<AnAggregateRootId, Root, Root.Attributes> {
+    public class Repository extends AggregateRepository<AnAggregateRootId, Root, Root.Attributes> {
 
     }
 

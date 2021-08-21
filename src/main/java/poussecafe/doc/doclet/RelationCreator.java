@@ -62,13 +62,12 @@ public class RelationCreator implements Consumer<TypeElement> {
         if(aggregateDoc.isPresent()) {
             Optional<ValueObjectDoc> idDoc = valueObjectDocRepository.getOptional(ValueObjectDocId.ofClassName(aggregateDoc.get().attributes().idClassName().value()));
             if(idDoc.isPresent()) {
-                Logger.debug("Building bi-directional relation between aggregate " + classDoc.getQualifiedName() + " and its id " + aggregateDoc.get().attributes().idClassName().value());
                 NewRelationParameters aggregateIdParameters = new NewRelationParameters();
                 aggregateIdParameters.fromComponent = component(classDoc);
                 aggregateIdParameters.toComponent = new Component(
                         ComponentType.VALUE_OBJECT,
-                        aggregateDoc.get().className(),
-                        aggregateDoc.get().attributes().moduleComponentDoc().value().componentDoc().name());
+                        idDoc.get().className(),
+                        idDoc.get().attributes().moduleComponentDoc().value().componentDoc().name());
                 componentLinking.linkComponents(aggregateIdParameters);
 
                 NewRelationParameters idAggregateParameters = new NewRelationParameters();
@@ -88,7 +87,6 @@ public class RelationCreator implements Consumer<TypeElement> {
         if(entityDoc.isPresent()) {
             Optional<ValueObjectDoc> idDoc = valueObjectDocRepository.getOptional(ValueObjectDocId.ofClassName(entityDoc.get().attributes().idClassName().value()));
             if(idDoc.isPresent()) {
-                Logger.debug("Building relation between entity " + classDoc.getQualifiedName() + " and its id " + entityDoc.get().attributes().idClassName().value());
                 NewRelationParameters entityIdParameters = new NewRelationParameters();
                 entityIdParameters.fromComponent = component(classDoc);
                 entityIdParameters.toComponent = new Component(
@@ -137,7 +135,6 @@ public class RelationCreator implements Consumer<TypeElement> {
 
     private void linkComponents(TypeElement from,
             TypeElement to) {
-        Logger.debug("Building relation between " + from.getQualifiedName() + " and " + to.getQualifiedName());
         NewRelationParameters parameters = new NewRelationParameters();
         parameters.fromComponent = component(from);
         parameters.toComponent = component(to);

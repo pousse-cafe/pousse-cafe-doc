@@ -16,6 +16,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import jdk.javadoc.doclet.DocletEnvironment;
+import poussecafe.discovery.DefaultProcess;
 import poussecafe.discovery.MessageListener;
 import poussecafe.discovery.ProducesEvent;
 import poussecafe.discovery.ProducesEvents;
@@ -41,7 +42,7 @@ import poussecafe.source.generation.NamingConventions;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-import static java.util.Collections.emptySet;
+import static java.util.Collections.singleton;
 import static java.util.stream.Collectors.toList;
 import static poussecafe.collection.Collections.asSet;
 
@@ -271,7 +272,7 @@ public class ProcessStepDocExtractor implements Service {
         } else if(!processNames.isEmpty()) {
             return Collections.unmodifiableSet(processNames);
         } else {
-            return emptySet();
+            return singleton(DefaultProcess.class.getSimpleName());
         }
     }
 

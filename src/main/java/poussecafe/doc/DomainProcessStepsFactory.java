@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import poussecafe.discovery.DefaultProcess;
 import poussecafe.doc.model.DocumentationItem;
 import poussecafe.doc.model.Domain;
 import poussecafe.doc.model.DomainProcessGraphNodes;
@@ -19,6 +20,7 @@ import poussecafe.doc.model.domainprocessdoc.DomainProcessGraphNodeName;
 import poussecafe.doc.model.domainprocessdoc.ToStep;
 import poussecafe.doc.model.processstepdoc.NameRequired;
 import poussecafe.doc.model.processstepdoc.StepMethodSignature;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.model.Documentation;
 
 import static java.util.stream.Collectors.toList;
@@ -36,23 +38,23 @@ public class DomainProcessStepsFactory {
         MessageListenersPerEvent eventToConsumingStepsMap = buildConsumingStepsPerEvent(listeners);
 
         Set<DomainProcessGraphNodeName> otherProcesses = new HashSet<>();
-        for(MessageListener processStepDoc : listeners) {
-            List<ToStep> currentStepToSteps = new ArrayList<>();
+        for(MessageListener listener : listeners) {
+            var currentStepToSteps = new ArrayList<ToStep>();
 
-            List<DomainProcessGraphNodeName> toInternals = eventToConsumingStepsMap.locateToInternals(processStepDoc);
+            var toInternals = eventToConsumingStepsMap.locateToInternals(listener);
             currentStepToSteps.addAll(toDirectSteps(toInternals));
 
-            Set<ToStep> toExternals = locateToExternals(processStepDoc);
+            var toExternals = locateToExternals(listener);
             stepsBuilder.merge(toExternalStepsMap(toExternals));
             currentStepToSteps.addAll(toExternals);
 
-            List<ToStep> toDomainProcesses = locateToDomainProcesses(domainProcessDoc, processStepDoc, domain);
+            var toDomainProcesses = locateToDomainProcesses(domainProcessDoc, listener, domain);
             otherProcesses.addAll(toDomainProcesses.stream().map(ToStep::name).collect(toList()));
             stepsBuilder.merge(toExternalStepsMap(toDomainProcesses));
             currentStepToSteps.addAll(toDomainProcesses);
 
-            var processStepComponentDoc = processStepDoc.documentation();
-            DomainProcessGraphNode currentStep = new DomainProcessGraphNode.Builder()
+            var processStepComponentDoc = listener.documentation();
+            var currentStep = new DomainProcessGraphNode.Builder()
                     .componentDoc(processStepComponentDoc)
                     .tos(currentStepToSteps)
                     .build();
@@ -61,10 +63,10 @@ public class DomainProcessStepsFactory {
             DomainProcessGraphNodeName currentStepName = new DomainProcessGraphNodeName(processStepComponentDoc.name());
             ToStep toCurrentStep = directStep(currentStepName);
 
-            List<DomainProcessGraphNodeName> fromExternals = locateFromExternals(processStepDoc);
+            List<DomainProcessGraphNodeName> fromExternals = locateFromExternals(listener);
             stepsBuilder.merge(fromExternalStepsMap(fromExternals, toCurrentStep));
 
-            List<DomainProcessGraphNodeName> fromDomainProcesses = fromDomainProcesses(domainProcessDoc, processStepDoc, domain);
+            List<DomainProcessGraphNodeName> fromDomainProcesses = fromDomainProcesses(domainProcessDoc, listener, domain);
             otherProcesses.addAll(fromDomainProcesses);
             stepsBuilder.merge(fromExternalStepsMap(fromDomainProcesses, toCurrentStep));
         }
@@ -153,16 +155,16 @@ public class DomainProcessStepsFactory {
     }
 
     private static List<ToStep> locateToDomainProcesses(
-            DocumentationItem domainProcessDoc,
-            MessageListener processStepDoc,
+            DocumentationItem processDoc,
+            MessageListener listener,
             Domain domain) {
-        Set<NameRequired> producedEvents = processStepDoc.producedEvents();
-        String domainProcessName = domainProcessDoc.name();
-        String moduleDocId = processStepDoc.documentation().name();
+        Set<NameRequired> producedEvents = listener.producedEvents();
+        String domainProcessName = processDoc.name();
+        String moduleDocId = processDoc.moduleName();
         Set<ToStep> toDomainProcesses = new HashSet<>();
         for(NameRequired producedEvent : producedEvents) {
-            for(MessageListener stepDoc : domain.findConsuming(moduleDocId, producedEvent.name())) {
-                Set<String> processNames = stepDoc.processNames();
+            for(MessageListener nextListener : domain.findConsuming(moduleDocId, producedEvent.name())) {
+                Set<String> processNames = nextListener.processNames();
                 for(String processName : processNames) {
                     if(!processName.equals(domainProcessName)) {
                         toDomainProcesses.add(new ToStep.Builder()
@@ -213,26 +215,22 @@ public class DomainProcessStepsFactory {
         Map<DomainProcessGraphNodeName, Set<String>> producedEventsPerProcess = new HashMap<>();
         Map<DomainProcessGraphNodeName, Set<String>> consumedEventsPerProcess = new HashMap<>();
         for(int i = 0; i < otherProcessesList.size(); ++i) {
-            DomainProcessGraphNodeName processName1 = otherProcessesList.get(i);
-            var process1 = domain.module(moduleName).orElseThrow().processes().stream()
-                    .filter(process -> process.name().equals(processName1.stringValue()))
-                    .findFirst().orElseThrow();
-            Set<String> producedEventsOf1 = producedEventsPerProcess.computeIfAbsent(processName1, name -> producedEventsOfProcess(moduleName, name, domain));
-            Set<String> consumedEventsOf1 = consumedEventsPerProcess.computeIfAbsent(processName1, name -> consumedEventsOfProcess(moduleName, name, domain));
+            var processName1 = otherProcessesList.get(i);
+            var process1ClassName = processClassName(moduleName, domain, processName1);
+            var producedEventsOf1 = producedEventsPerProcess.computeIfAbsent(processName1, name -> producedEventsOfProcess(moduleName, name, domain));
+            var consumedEventsOf1 = consumedEventsPerProcess.computeIfAbsent(processName1, name -> consumedEventsOfProcess(moduleName, name, domain));
             for(int j = i + 1; j < otherProcessesList.size(); ++j) {
-                DomainProcessGraphNodeName processName2 = otherProcessesList.get(j);
-                var process2 = domain.module(moduleName).orElseThrow().processes().stream()
-                        .filter(process -> process.name().equals(processName2.stringValue()))
-                        .findFirst().orElseThrow();
-                Set<String> producedEventsOf2 = producedEventsPerProcess.computeIfAbsent(processName2, name -> producedEventsOfProcess(moduleName, name, domain));
-                Set<String> consumedEventsOf2 = consumedEventsPerProcess.computeIfAbsent(processName2, name -> consumedEventsOfProcess(moduleName, name, domain));
+                var processName2 = otherProcessesList.get(j);
+                var process2ClassName = processClassName(moduleName, domain, processName2);
+                var producedEventsOf2 = producedEventsPerProcess.computeIfAbsent(processName2, name -> producedEventsOfProcess(moduleName, name, domain));
+                var consumedEventsOf2 = consumedEventsPerProcess.computeIfAbsent(processName2, name -> consumedEventsOfProcess(moduleName, name, domain));
 
                 Set<String> producedBy1AndConsumedBy2 = intersect(producedEventsOf1, consumedEventsOf2);
                 if(!producedBy1AndConsumedBy2.isEmpty()) {
                     interprocessSteps.put(processName1, new DomainProcessGraphNode.Builder()
                             .componentDoc(new DocumentationItem.Builder()
                                     .id(processName1 + "_" + processName2)
-                                    .className(process1.className())
+                                    .className(process1ClassName)
                                     .name(processName1.stringValue())
                                     .description(Documentation.empty())
                                     .moduleName(moduleName)
@@ -246,7 +244,7 @@ public class DomainProcessStepsFactory {
                     interprocessSteps.put(processName2, new DomainProcessGraphNode.Builder()
                             .componentDoc(new DocumentationItem.Builder()
                                     .id(processName2 + "_" + processName1)
-                                    .className(process2.className())
+                                    .className(process2ClassName)
                                     .name(processName2.stringValue())
                                     .description(Documentation.empty())
                                     .moduleName(moduleName)
@@ -257,6 +255,17 @@ public class DomainProcessStepsFactory {
             }
         }
         return interprocessSteps;
+    }
+
+    private static Optional<ClassName> processClassName(String moduleName, Domain domain, DomainProcessGraphNodeName processName) {
+        if(processName.stringValue().equals(DefaultProcess.class.getSimpleName())) {
+            return Optional.empty();
+        } else {
+            return domain.module(moduleName).orElseThrow().processes().stream()
+                    .filter(process -> process.name().equals(processName.stringValue()))
+                    .findFirst().orElseThrow()
+                    .className();
+        }
     }
 
     private static Set<String> producedEventsOfProcess(

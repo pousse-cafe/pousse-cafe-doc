@@ -43,6 +43,7 @@ Pousse-Café Doc Domain Model
           </ol>
           <li><a href="#sample_processes">Domain Processes</a></li>
           <ol>
+            <li><a href="#sample_defaultprocess">DefaultProcess</a></li>
             <li><a href="#sample_test">Test</a></li>
           </ol>
         </ol>
@@ -150,6 +151,16 @@ Sample module.
 
 
 <h3 id="sample_processes">Domain Processes</h3>
+<h4 id="sample_defaultprocess">DefaultProcess</h4>
+The default process includes all listeners with no explicit process defined. One may explictly link a listener to the default process but this is not recommended.
+
+<div class="figure">
+  <img src="img/sample_defaultprocess.png"/>
+</div>
+
+<ul>
+  <li><strong>AnAggregate.listener(Event3):</strong> listener(Event3) description.</li>
+</ul>
 <h4 id="sample_test">Test</h4>
 This is the description of Test process.
 
@@ -167,6 +178,7 @@ This is the description of Test process.
 <ol class="ubiquitousLanguage">
 <li><span class="entryName">AnAggregate (Sample)</span>, Aggregate, AnAggregate description.</li>
 <li><span class="entryName">AnotherAggregate (Sample)</span>, Aggregate, AnotherAggregate description.</li>
+<li><span class="entryName">DefaultProcess (Sample)</span>, Domain Process, The default process includes all listeners with no explicit process defined</li>
 <li><span class="entryName">Sample</span>, Module, Sample module.</li>
 <li><span class="entryName">Test (Sample)</span>, Domain Process, This is the description of Test process.</li>
 </ol>

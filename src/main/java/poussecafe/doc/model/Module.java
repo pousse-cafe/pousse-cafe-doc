@@ -5,7 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import poussecafe.discovery.DefaultProcess;
+import poussecafe.doc.StringNormalizer;
 import poussecafe.domain.ValueObject;
+import poussecafe.source.analysis.ClassName;
+import poussecafe.source.model.Documentation;
 
 import static java.util.stream.Collectors.toList;
 
@@ -91,6 +95,21 @@ public class Module implements ValueObject {
             Objects.requireNonNull(module.aggregates);
             Objects.requireNonNull(module.services);
             Objects.requireNonNull(module.processes);
+
+            if(module.listeners.stream().anyMatch(listener ->
+                listener.processNames().contains(DefaultProcess.class.getSimpleName()))) {
+                module.processes.add(new DocumentationItem.Builder()
+                        .id(StringNormalizer.normalizeString(DefaultProcess.class.getSimpleName()))
+                        .className(Optional.of(new ClassName(DefaultProcess.class.getCanonicalName())))
+                        .description(new Documentation.Builder()
+                                .description("The default process includes all listeners with no explicit process defined. One may explictly link a listener to the default process but this is not recommended.")
+                                .shortDescription("The default process includes all listeners with no explicit process defined")
+                                .build())
+                        .moduleName(module.documentation.moduleName())
+                        .name(DefaultProcess.class.getSimpleName())
+                        .build());
+            }
+
             return module;
         }
     }
