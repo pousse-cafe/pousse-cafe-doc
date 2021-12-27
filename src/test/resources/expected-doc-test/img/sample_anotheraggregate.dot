@@ -1,5 +1,11 @@
 graph {
 splines=spline;
 overlap=false;
+"AnAggregateRootId" -- "AnotherAggregate" [style=solid];
+"AnAggregate" -- "AnAggregateRootId" [style=dotted];
+"AnEnum" -- "AnotherAggregate" [style=solid];
+"AnAggregate"[shape=box,style=bold];
+"AnEnum"[shape=ellipse];
 "AnotherAggregate"[shape=box,style=bold];
+"AnAggregateRootId"[shape=ellipse];
 }

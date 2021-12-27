@@ -2,6 +2,8 @@ package poussecafe.doc.model.relationdoc;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import poussecafe.domain.ValueObject;
 import poussecafe.source.analysis.ClassName;
 
@@ -49,6 +51,15 @@ public class Component implements ValueObject {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
+                .append(type)
+                .append(className)
+                .append(name)
+                .build();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append(type)
                 .append(className)
                 .append(name)

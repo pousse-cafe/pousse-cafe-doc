@@ -1,9 +1,9 @@
 digraph {
 splines=spline;
 "AnAggregate.listener(Event1)" -> "AnotherAggregate.listener(Event2)" [style=solid];
-"AnotherAggregate.listener(Event2)" -> "DefaultProcess" [style=dotted];
-"From" -> "AnAggregate.listener(Event1)" [style=solid];
 "AnotherAggregate.listener(Event2)" -> "To" [style=dotted];
+"From" -> "AnAggregate.listener(Event1)" [style=solid];
+"AnotherAggregate.listener(Event2)" -> "DefaultProcess" [style=dotted];
 "DefaultProcess"[shape=box,style=dashed];
 "From"[shape=box,style=dashed];
 "To"[shape=box,style=dashed];

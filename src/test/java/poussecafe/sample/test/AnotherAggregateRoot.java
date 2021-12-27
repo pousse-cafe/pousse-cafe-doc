@@ -1,5 +1,6 @@
 package poussecafe.sample.test;
 
+import poussecafe.attribute.Attribute;
 import poussecafe.discovery.Aggregate;
 import poussecafe.discovery.MessageListener;
 import poussecafe.discovery.ProducesEvent;
@@ -27,5 +28,8 @@ public class AnotherAggregateRoot extends AggregateRoot<AnotherAggregateRootId, 
 
     public static interface Attributes extends EntityAttributes<AnotherAggregateRootId> {
 
+        Attribute<AnAggregateRootId> aggregateId();
+
+        Attribute<AnEnum> someEnum();
     }
 }

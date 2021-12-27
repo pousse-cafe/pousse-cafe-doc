@@ -2,6 +2,8 @@ package poussecafe.doc.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import poussecafe.doc.model.relationdoc.Component;
 
 import static java.util.Objects.requireNonNull;
@@ -57,6 +59,14 @@ public class Relation {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
+                .append(from)
+                .append(to)
+                .build();
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .append(from)
                 .append(to)
                 .build();

@@ -52,10 +52,37 @@ public class PousseCafeDocGenerator {
 
     private List<Relation> relations() {
         var relations = new HashSet<Relation>();
-        model.aggregates().forEach(aggregate -> addRelations(relations, component(aggregate), aggregate.rootReferences()));
+        model.aggregates().forEach(aggregate -> addRelations(relations, aggregate));
         model.entities().forEach(entity -> addRelations(relations, component(ComponentType.ENTITY, entity), entity.references()));
         model.valueObjects().forEach(valueObject -> addRelations(relations, component(ComponentType.VALUE_OBJECT, valueObject), valueObject.references()));
         return new ArrayList<>(relations);
+    }
+
+    private void addRelations(Set<Relation> relations, Aggregate aggregate) {
+        addRelations(relations, component(aggregate), aggregate.rootReferences());
+        var aggregateId = aggregate.rootIdentifierClassName();
+        if(aggregateId.isPresent()) {
+            var aggregateIdVo = model.valueObjects().stream()
+                    .filter(valueObject -> valueObject.typeName().qualifiedName().equals(aggregateId.orElseThrow().qualified()))
+                    .findFirst();
+            if(aggregateIdVo.isPresent()) {
+                var aggregateToId = new Relation.Builder()
+                        .from(component(aggregate))
+                        .to(new Component(ComponentType.VALUE_OBJECT,
+                                aggregateIdVo.orElseThrow().typeName().asName(),
+                                aggregateIdVo.orElseThrow().typeName().simpleName()))
+                        .build();
+                relations.add(aggregateToId);
+
+                var idToAggregate = new Relation.Builder()
+                        .from(new Component(ComponentType.VALUE_OBJECT,
+                                aggregateIdVo.orElseThrow().typeName().asName(),
+                                aggregateIdVo.orElseThrow().typeName().simpleName()))
+                        .to(component(aggregate))
+                        .build();
+                relations.add(idToAggregate);
+            }
+        }
     }
 
     private Component component(Aggregate aggregate) {

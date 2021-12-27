@@ -1,0 +1,6 @@
+digraph {
+splines=spline;
+"Test" -> "AnAggregate.listener(Event3)" [style=solid];
+"Test"[shape=box,style=dashed];
+"AnAggregate.listener(Event3)"[shape=ellipse];
+}
