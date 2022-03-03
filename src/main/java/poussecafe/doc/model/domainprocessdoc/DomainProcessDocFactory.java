@@ -17,7 +17,7 @@ import poussecafe.doc.model.moduledoc.ModuleDocRepository;
 import poussecafe.domain.AggregateFactory;
 import poussecafe.domain.DomainException;
 import poussecafe.domain.Process;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 
 public class DomainProcessDocFactory extends AggregateFactory<DomainProcessDocId, DomainProcessDoc, DomainProcessDoc.Attributes> {
 
@@ -40,7 +40,7 @@ public class DomainProcessDocFactory extends AggregateFactory<DomainProcessDocId
     }
 
     public boolean isDomainProcessDoc(TypeElement doc) {
-        return classDocPredicates.documentsWithSuperclass(doc, DomainProcess.class)
+        return classDocPredicates.documentsWithSuperclass(doc, ExplicitDomainProcess.class)
                 || classDocPredicates.documentsWithSuperinterface(doc, Process.class);
     }
 

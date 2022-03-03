@@ -1,10 +1,11 @@
 package poussecafe.doc.model;
 
 import java.io.Serializable;
+import poussecafe.attribute.AutoAdapter;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
 
 @SuppressWarnings("serial")
-public class ModuleComponentDocData implements Serializable {
+public class ModuleComponentDocData implements Serializable, AutoAdapter<ModuleComponentDoc> {
 
     public static ModuleComponentDocData adapt(ModuleComponentDoc moduleComponentDoc) {
         ModuleComponentDocData data = new ModuleComponentDocData();
@@ -20,6 +21,7 @@ public class ModuleComponentDocData implements Serializable {
 
     public String moduleName;
 
+    @Override
     public ModuleComponentDoc adapt() {
         return new ModuleComponentDoc.Builder()
                 .componentDoc(componentDoc.toModel())

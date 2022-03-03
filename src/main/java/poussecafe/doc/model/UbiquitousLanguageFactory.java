@@ -31,7 +31,7 @@ public class UbiquitousLanguageFactory implements Service {
                 for (DocumentationItem entityDoc : aggregate.entities()) {
                     language
                             .add(new UbiquitousLanguageEntry.Builder()
-                                    .moduleName(moduleName)
+                                    .moduleName(entityDoc.moduleName())
                                     .componentDoc(entityDoc)
                                     .type("Entity")
                                     .build());
@@ -40,7 +40,7 @@ public class UbiquitousLanguageFactory implements Service {
                 for (DocumentationItem valueObjectDoc : aggregate.valueObjects()) {
                     language
                             .add(new UbiquitousLanguageEntry.Builder()
-                                    .moduleName(moduleName)
+                                    .moduleName(valueObjectDoc.moduleName())
                                     .componentDoc(valueObjectDoc)
                                     .type("Value Object")
                                     .build());
@@ -50,7 +50,7 @@ public class UbiquitousLanguageFactory implements Service {
             for (DocumentationItem serviceDoc : module.services()) {
                 language
                         .add(new UbiquitousLanguageEntry.Builder()
-                                .moduleName(moduleName)
+                                .moduleName(serviceDoc.moduleName())
                                 .componentDoc(serviceDoc)
                                 .type("Service")
                                 .build());
@@ -59,7 +59,7 @@ public class UbiquitousLanguageFactory implements Service {
             for (DocumentationItem domainProcessDoc : module.processes()) {
                 language
                         .add(new UbiquitousLanguageEntry.Builder()
-                                .moduleName(moduleName)
+                                .moduleName(domainProcessDoc.moduleName())
                                 .componentDoc(domainProcessDoc)
                                 .type("Domain Process")
                                 .build());

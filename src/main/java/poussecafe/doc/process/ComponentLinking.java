@@ -5,9 +5,9 @@ import poussecafe.doc.model.relationdoc.RelationDoc;
 import poussecafe.doc.model.relationdoc.RelationDocFactory;
 import poussecafe.doc.model.relationdoc.RelationDocFactory.NewRelationParameters;
 import poussecafe.doc.model.relationdoc.RelationDocRepository;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 
-public class ComponentLinking extends DomainProcess {
+public class ComponentLinking extends ExplicitDomainProcess {
 
     public void linkComponents(NewRelationParameters parameters) {
         Logger.debug("Building relation between " + parameters.fromComponent.className().qualified() + " and "

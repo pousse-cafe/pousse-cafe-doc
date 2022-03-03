@@ -5,9 +5,9 @@ import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.model.vodoc.ValueObjectDoc;
 import poussecafe.doc.model.vodoc.ValueObjectDocFactory;
 import poussecafe.doc.model.vodoc.ValueObjectDocRepository;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 
-public class ValueObjectDocCreation extends DomainProcess {
+public class ValueObjectDocCreation extends ExplicitDomainProcess {
 
     public void addValueObjectDoc(ModuleDocId moduleDocId, TypeElement valueObjectClassDoc) {
         ValueObjectDoc entityDoc = valueObjectDocFactory.newValueObjectDoc(moduleDocId, valueObjectClassDoc);

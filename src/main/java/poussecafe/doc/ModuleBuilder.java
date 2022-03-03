@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.Builder;
 import lombok.NonNull;
+import poussecafe.discovery.DefaultProcess;
 import poussecafe.doc.model.Aggregate;
 import poussecafe.doc.model.DocumentationItem;
 import poussecafe.doc.model.MessageListener;
@@ -12,6 +13,7 @@ import poussecafe.doc.model.Module;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 import poussecafe.doc.model.processstepdoc.NameRequired;
 import poussecafe.doc.model.processstepdoc.StepMethodSignature;
+import poussecafe.source.analysis.ClassName;
 import poussecafe.source.model.ComponentType;
 import poussecafe.source.model.ProcessModel;
 import poussecafe.source.model.ProducedEvent;
@@ -83,15 +85,15 @@ public class ModuleBuilder {
         return sourceAggregate.rootReferences().stream()
                 .filter(reference -> reference.type() == ComponentType.ENTITY)
                 .map(this::entityDocumentation)
+                .filter(Optional::isPresent).map(Optional::get)
                 .collect(toList());
     }
 
-    private DocumentationItem entityDocumentation(TypeReference entityDocumentation) {
+    private Optional<DocumentationItem> entityDocumentation(TypeReference entityDocumentation) {
         return model.entities().stream()
                 .filter(type -> type.typeName().asName().equals(entityDocumentation.typeClassName()))
                 .findAny()
-                .map(this::typeComponentDocumentation)
-                .orElseThrow();
+                .map(this::typeComponentDocumentation);
     }
 
     private DocumentationItem typeComponentDocumentation(TypeComponent component) {
@@ -100,34 +102,38 @@ public class ModuleBuilder {
                 .id(StringNormalizer.normalizeString(componentName))
                 .className(Optional.of(component.typeName().asName()))
                 .description(component.documentation())
-                .moduleName(moduleName())
+                .moduleName(resolveModuleName(component))
                 .name(componentName)
                 .build();
+    }
+
+    private String resolveModuleName(TypeComponent component) {
+        return model.moduleResolver().findModule(component.typeName().asName()).map(ClassName::simple).orElse(DefaultProcess.class.getSimpleName());
     }
 
     private List<DocumentationItem> valueObjects(poussecafe.source.model.Aggregate sourceAggregate) {
         return sourceAggregate.rootReferences().stream()
                 .filter(reference -> reference.type() == ComponentType.VALUE_OBJECT)
                 .map(this::valueObjectDocumentation)
+                .filter(Optional::isPresent).map(Optional::get)
                 .collect(toList());
     }
 
-    private DocumentationItem valueObjectDocumentation(TypeReference entityDocumentation) {
+    private Optional<DocumentationItem> valueObjectDocumentation(TypeReference typeReference) {
         return model.valueObjects().stream()
-                .filter(type -> type.typeName().asName().equals(entityDocumentation.typeClassName()))
+                .filter(type -> type.typeName().asName().equals(typeReference.typeClassName()))
                 .findAny()
-                .map(this::typeComponentDocumentation)
-                .orElseThrow();
+                .map(this::typeComponentDocumentation);
     }
 
     private List<DocumentationItem> services() {
-        return model.services().stream()
+        return model.moduleServices(module)
                 .map(this::typeComponentDocumentation)
                 .collect(toList());
     }
 
     private List<MessageListener> listeners() {
-        return model.messageListeners().stream()
+        return model.moduleMessageListeners(module)
                 .map(this::listener)
                 .collect(toList());
     }
@@ -167,7 +173,7 @@ public class ModuleBuilder {
     }
 
     private List<DocumentationItem> processes() {
-        return model.processes().stream()
+        return model.moduleProcesses(module)
                 .map(ProcessModel::typeComponent)
                 .map(this::typeComponentDocumentation)
                 .collect(toList());

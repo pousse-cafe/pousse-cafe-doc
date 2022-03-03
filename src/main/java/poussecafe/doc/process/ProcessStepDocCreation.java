@@ -10,9 +10,9 @@ import poussecafe.doc.model.processstepdoc.ProcessStepDoc;
 import poussecafe.doc.model.processstepdoc.ProcessStepDocExtractor;
 import poussecafe.doc.model.processstepdoc.ProcessStepDocId;
 import poussecafe.doc.model.processstepdoc.ProcessStepDocRepository;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 
-public class ProcessStepDocCreation extends DomainProcess {
+public class ProcessStepDocCreation extends ExplicitDomainProcess {
 
     public void createOrUpdateProcessStepDoc(ModuleDocId moduleDocId, TypeElement classDoc) {
         List<ProcessStepDoc> docs = processStepDocExtractor.extractProcessStepDocs(moduleDocId, classDoc);

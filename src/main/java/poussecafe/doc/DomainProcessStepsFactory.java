@@ -263,8 +263,9 @@ public class DomainProcessStepsFactory {
         } else {
             return domain.module(moduleName).orElseThrow().processes().stream()
                     .filter(process -> process.name().equals(processName.stringValue()))
-                    .findFirst().orElseThrow()
-                    .className();
+                    .findFirst()
+                    .map(DocumentationItem::className)
+                    .orElse(Optional.empty());
         }
     }
 

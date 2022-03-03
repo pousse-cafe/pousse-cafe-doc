@@ -5,9 +5,9 @@ import javax.lang.model.element.TypeElement;
 import poussecafe.doc.model.moduledoc.ModuleDoc;
 import poussecafe.doc.model.moduledoc.ModuleDocFactory;
 import poussecafe.doc.model.moduledoc.ModuleDocRepository;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 
-public class ModuleDocCreation extends DomainProcess {
+public class ModuleDocCreation extends ExplicitDomainProcess {
 
     @Deprecated(since = "0.17")
     public void addModuleDoc(PackageElement classDoc) {

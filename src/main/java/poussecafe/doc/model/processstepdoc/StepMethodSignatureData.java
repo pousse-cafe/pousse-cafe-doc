@@ -2,10 +2,11 @@ package poussecafe.doc.model.processstepdoc;
 
 import java.io.Serializable;
 import java.util.Optional;
+import poussecafe.attribute.AutoAdapter;
 import poussecafe.doc.model.domainprocessdoc.ComponentMethodName;
 
 @SuppressWarnings("serial")
-public class StepMethodSignatureData implements Serializable {
+public class StepMethodSignatureData implements Serializable, AutoAdapter<StepMethodSignature> {
 
     public static StepMethodSignatureData adapt(StepMethodSignature signature) {
         StepMethodSignatureData data = new StepMethodSignatureData();

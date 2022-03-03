@@ -5,9 +5,9 @@ import poussecafe.doc.model.entitydoc.EntityDoc;
 import poussecafe.doc.model.entitydoc.EntityDocFactory;
 import poussecafe.doc.model.entitydoc.EntityDocRepository;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 
-public class EntityDocCreation extends DomainProcess {
+public class EntityDocCreation extends ExplicitDomainProcess {
 
     public void addEntityDoc(ModuleDocId moduleDocId, TypeElement entityClassDoc) {
         EntityDoc entityDoc = entityDocFactory.newEntityDoc(moduleDocId, entityClassDoc);

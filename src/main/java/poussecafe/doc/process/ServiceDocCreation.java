@@ -5,9 +5,9 @@ import poussecafe.doc.model.moduledoc.ModuleDocId;
 import poussecafe.doc.model.servicedoc.ServiceDoc;
 import poussecafe.doc.model.servicedoc.ServiceDocFactory;
 import poussecafe.doc.model.servicedoc.ServiceDocRepository;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 
-public class ServiceDocCreation extends DomainProcess {
+public class ServiceDocCreation extends ExplicitDomainProcess {
 
     public void addServiceDoc(ModuleDocId moduleDocId, TypeElement classDoc) {
         ServiceDoc serviceDoc = serviceDocFactory.newServiceDoc(moduleDocId, classDoc);

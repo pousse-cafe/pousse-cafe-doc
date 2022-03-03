@@ -10,9 +10,9 @@ import poussecafe.doc.model.domainprocessdoc.DomainProcessDocFactory;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocId;
 import poussecafe.doc.model.domainprocessdoc.DomainProcessDocRepository;
 import poussecafe.doc.model.moduledoc.ModuleDocId;
-import poussecafe.process.DomainProcess;
+import poussecafe.process.ExplicitDomainProcess;
 
-public class DomainProcessDocCreation extends DomainProcess {
+public class DomainProcessDocCreation extends ExplicitDomainProcess {
 
     public void addDomainProcessDoc(ModuleDocId moduleDocId, TypeElement classDoc) {
         DomainProcessDoc entityDoc = domainProcessDocFactory.newDomainProcessDoc(moduleDocId, classDoc);
