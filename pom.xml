@@ -5,12 +5,17 @@
     <parent>
         <groupId>org.pousse-cafe-framework</groupId>
         <artifactId>pousse-cafe</artifactId>
-        <version>0.28.0</version>
+        <version>0.29.0</version>
     </parent>
+
+    <scm>
+        <connection>scm:git:https://github.com/pousse-cafe/pousse-cafe-doc.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/pousse-cafe/pousse-cafe-doc.git</developerConnection>
+        <url>http://github.com/pousse-cafe/pousse-cafe-doc/tree/master</url>
+    </scm>
 
     <artifactId>pousse-cafe-doc</artifactId>
     <name>Pousse-Café - Doc</name>
-    <version>0.29.0-SNAPSHOT</version>
 
     <properties>
         <lombok.version>1.18.20</lombok.version>
@@ -20,7 +25,7 @@
         <dependency>
             <groupId>org.pousse-cafe-framework</groupId>
             <artifactId>pousse-cafe-source</artifactId>
-            <version>0.29.0-SNAPSHOT</version>
+            <version>0.29.0</version>
         </dependency>
         <dependency>
             <groupId>org.pousse-cafe-framework</groupId>
