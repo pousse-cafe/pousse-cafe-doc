@@ -101,8 +101,17 @@
                 <configuration>
                     <source>11</source>
                     <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-                    <sourceFileIncludes></sourceFileIncludes>
+                    <failOnError>false</failOnError>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadoc</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
