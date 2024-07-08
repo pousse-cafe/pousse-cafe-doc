@@ -1,36 +1,114 @@
 package poussecafe.doc;
 
+import java.util.Objects;
 import java.util.Optional;
-import lombok.Builder;
-import lombok.Builder.Default;
-import lombok.NonNull;
-import lombok.Value;
-import lombok.experimental.Accessors;
 
-@Value
-@Builder(builderClassName = "Builder")
-@Accessors(fluent = true)
 public class PousseCafeDocGenerationConfiguration {
 
-    @NonNull
-    String domainName;
+    public String domainName() {
+        return domainName;
+    }
 
-    @NonNull
-    String version;
+    private String domainName;
 
-    @NonNull
-    String outputDirectory;
+    public String version() {
+        return version;
+    }
 
-    boolean includeGenerationDate;
+    private String version;
+    
+    public String outputDirectory() {
+        return outputDirectory;
+    }
 
-    @Default
-    Optional<String> customDotExecutable = Optional.empty();
+    private String outputDirectory;
 
-    @Default
-    Optional<String> customFdpExecutable = Optional.empty();
+    public boolean includeGenerationDate() {
+        return includeGenerationDate;
+    }
 
-    @NonNull
-    String pdfFileName;
+    private boolean includeGenerationDate;
+
+    public Optional<String> customDotExecutable() {
+        return customDotExecutable;
+    }
+
+    private Optional<String> customDotExecutable = Optional.empty();
+
+    public Optional<String> customFdpExecutable() {
+        return customFdpExecutable;
+    }
+
+    private Optional<String> customFdpExecutable = Optional.empty();
+
+    public String pdfFileName() {
+        return pdfFileName;
+    }
+
+    private String pdfFileName;
+
+    public boolean debug() {
+        return debug;
+    }
 
     private boolean debug;
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        public PousseCafeDocGenerationConfiguration build() {
+            return configuration;
+        }
+
+        private PousseCafeDocGenerationConfiguration configuration = new PousseCafeDocGenerationConfiguration();
+
+        public Builder domainName(String domainName) {
+            Objects.requireNonNull(domainName);
+            configuration.domainName = domainName;
+            return this;
+        }
+
+        public Builder version(String version) {
+            Objects.requireNonNull(version);
+            configuration.version = version;
+            return this;
+        }
+        
+        public Builder outputDirectory(String outputDirectory) {
+            Objects.requireNonNull(outputDirectory);
+            configuration.outputDirectory = outputDirectory;
+            return this;
+        }
+
+        public Builder includeGenerationDate(boolean includeGenerationDate) {
+            configuration.includeGenerationDate = includeGenerationDate;
+            return this;
+        }
+
+        public Builder customDotExecutable(Optional<String> customDotExecutable) {
+            Objects.requireNonNull(customDotExecutable);
+            configuration.customDotExecutable = customDotExecutable;
+            return this;
+        }
+
+        public Builder customFdpExecutable(Optional<String> customFdpExecutable) {
+            Objects.requireNonNull(customFdpExecutable);
+            configuration.customFdpExecutable = customFdpExecutable;
+            return this;
+        }
+
+        public Builder pdfFileName(String pdfFileName) {
+            Objects.requireNonNull(pdfFileName);
+            configuration.pdfFileName = pdfFileName;
+            return this;
+        }
+
+        public Builder debug(boolean debug) {
+            configuration.debug = debug;
+            return this;
+        }
+    }
 }

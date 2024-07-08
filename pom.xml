@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.pousse-cafe-framework</groupId>
         <artifactId>pousse-cafe</artifactId>
-        <version>0.29.0</version>
+        <version>0.29.1-SNAPSHOT</version>
     </parent>
 
     <scm>
@@ -17,15 +17,11 @@
     <artifactId>pousse-cafe-doc</artifactId>
     <name>Pousse-Café - Doc</name>
 
-    <properties>
-        <lombok.version>1.18.20</lombok.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.pousse-cafe-framework</groupId>
             <artifactId>pousse-cafe-source</artifactId>
-            <version>0.29.0</version>
+            <version>0.29.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.pousse-cafe-framework</groupId>
@@ -43,12 +39,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-            <optional>true</optional>
         </dependency>
 
         <dependency>

@@ -2,9 +2,8 @@ package poussecafe.doc;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import lombok.Builder;
-import lombok.NonNull;
 import poussecafe.discovery.DefaultProcess;
 import poussecafe.doc.model.Aggregate;
 import poussecafe.doc.model.DocumentationItem;
@@ -25,8 +24,32 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
-@Builder
 public class ModuleBuilder {
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        public ModuleBuilder build() {
+            Objects.requireNonNull(moduleBuilder.module);
+            Objects.requireNonNull(moduleBuilder.model);
+            return moduleBuilder;
+        }
+
+        private ModuleBuilder moduleBuilder = new ModuleBuilder();
+
+        public Builder module(TypeComponent module) {
+            this.moduleBuilder.module = module;
+            return this;
+        }
+
+        public Builder model(SourceModel model) {
+            this.moduleBuilder.model = model;
+            return this;
+        }
+    }
 
     public Module build() {
         var moduleClassName = module.typeName().asName();
@@ -47,7 +70,6 @@ public class ModuleBuilder {
                 .build();
     }
 
-    @NonNull
     private TypeComponent module;
 
     private List<Aggregate> aggregates() {
@@ -56,7 +78,6 @@ public class ModuleBuilder {
                 .collect(toList());
     }
 
-    @NonNull
     private SourceModel model;
 
     private Aggregate buildAggregate(poussecafe.source.model.Aggregate sourceAggregate) {

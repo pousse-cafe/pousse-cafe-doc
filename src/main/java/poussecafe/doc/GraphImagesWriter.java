@@ -3,8 +3,6 @@ package poussecafe.doc;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
-import lombok.Builder;
-import lombok.Builder.Default;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import poussecafe.doc.model.Aggregate;
@@ -12,7 +10,6 @@ import poussecafe.doc.model.DocumentationItem;
 import poussecafe.doc.model.Domain;
 import poussecafe.doc.model.Module;
 
-@Builder(builderClassName = "BaseBuilder")
 public class GraphImagesWriter {
 
     private static final String IMAGES_SUB_DIRECTORY = "img";
@@ -34,7 +31,6 @@ public class GraphImagesWriter {
         }
     }
 
-    @Default
     private Logger logger = LoggerFactory.getLogger(GraphImagesWriter.class);
 
     private File outputDirectory() {
@@ -74,15 +70,13 @@ public class GraphImagesWriter {
         }
     }
 
-    public static CustomBuilder builder() {
-        return new CustomBuilder();
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public static class CustomBuilder extends BaseBuilder {
+    public static class Builder {
 
-        @Override
         public GraphImagesWriter build() {
-            GraphImagesWriter writer = super.build();
             writer.graphImageWriter = new GraphImageWriter.Builder()
                     .customDotExecutable(customDotExecutable)
                     .customFdpExecutable(customFdpExecutable)
@@ -90,14 +84,21 @@ public class GraphImagesWriter {
             return writer;
         }
 
-        public CustomBuilder customDotExecutable(Optional<String> customDotExecutable) {
+        private GraphImagesWriter writer = new GraphImagesWriter();
+
+        public Builder outputDirectoryPath(String outputDirectoryPath) {
+            writer.outputDirectoryPath = outputDirectoryPath;
+            return this;
+        }
+
+        public Builder customDotExecutable(Optional<String> customDotExecutable) {
             this.customDotExecutable = customDotExecutable;
             return this;
         }
 
         private Optional<String> customDotExecutable = Optional.empty();
 
-        public CustomBuilder customFdpExecutable(Optional<String> customFdpExecutable) {
+        public Builder customFdpExecutable(Optional<String> customFdpExecutable) {
             this.customFdpExecutable = customFdpExecutable;
             return this;
         }

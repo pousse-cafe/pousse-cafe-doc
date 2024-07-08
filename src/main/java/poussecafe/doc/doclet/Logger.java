@@ -50,6 +50,13 @@ public class Logger {
         for(int i = args.length; i < parts.length; ++i) {
             builder.append(parts[i]);
         }
-        logger.accept(builder.toString());
+        var formattedMessage = builder.toString();
+        try {
+            logger.accept(formattedMessage);
+        } catch(Exception e) {
+            System.err.println(
+                String.format("Logger failed, falling back to console: %s", formattedMessage)
+            );
+        }
     }
 }

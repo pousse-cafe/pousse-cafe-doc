@@ -3,8 +3,8 @@ package poussecafe.doc;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import lombok.Builder;
 import poussecafe.doc.model.Domain;
 import poussecafe.doc.model.Module;
 import poussecafe.doc.model.Relation;
@@ -15,7 +15,6 @@ import poussecafe.source.model.SourceModel;
 import poussecafe.source.model.TypeComponent;
 import poussecafe.source.model.TypeReference;
 
-@Builder(builderClassName = "Builder")
 public class PousseCafeDocGenerator {
 
     public void generate() {
@@ -127,5 +126,30 @@ public class PousseCafeDocGenerator {
     private void writePdf() {
         var pdfWriter = new PdfWriter(configuration);
         pdfWriter.writePdf();
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+
+        private PousseCafeDocGenerator generator = new PousseCafeDocGenerator();
+
+        public PousseCafeDocGenerator build() {
+            Objects.requireNonNull(generator.configuration);
+            Objects.requireNonNull(generator.model);
+            return generator;
+        }
+
+        public Builder configuration(PousseCafeDocGenerationConfiguration configuration) {
+            generator.configuration = configuration;
+            return this;
+        }
+
+        public Builder model(SourceModel model) {
+            generator.model = model;
+            return this;
+        }
     }
 }
