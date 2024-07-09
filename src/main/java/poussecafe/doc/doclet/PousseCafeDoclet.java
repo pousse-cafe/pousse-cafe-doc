@@ -29,7 +29,10 @@ import poussecafe.doc.model.DocletAccess;
 import poussecafe.doc.model.Domain;
 import poussecafe.doc.model.DomainFactory;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.messaging.sync.SynchronousMessaging;
+import poussecafe.runtime.ProcessingMode;
 import poussecafe.runtime.Runtime;
+import poussecafe.storage.internal.InternalStorage;
 
 public class PousseCafeDoclet implements Doclet {
 
@@ -84,7 +87,12 @@ public class PousseCafeDoclet implements Doclet {
         configuration = docletConfigBuilder.build();
 
         runtime = new Runtime.Builder()
-                .withBundle(PousseCafeDocBundle.configure().defineAndImplementDefault().build())
+                .withBundle(PousseCafeDocBundle.configure()
+                        .defineThenImplement()
+                        .messaging(SynchronousMessaging.instance())
+                        .storage(InternalStorage.instance())
+                        .build())
+                .processingMode(ProcessingMode.synchronous())
                 .withInjectableService(DocletEnvironment.class, environment)
                 .withInjectableService(configuration)
                 .build();
