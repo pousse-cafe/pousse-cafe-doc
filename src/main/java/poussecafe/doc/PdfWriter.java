@@ -18,8 +18,7 @@ public class PdfWriter {
             }
 
             Logger.debug("Writing PDF...");
-            var pdfRenderer = new ITextRenderer();
-            pdfRenderer.setDocument(new File(configuration.outputDirectory(), "index.html"));
+            var pdfRenderer = new ITextRenderer(new File(configuration.outputDirectory(), "index.html"));
             pdfRenderer.layout();
             var pdfFile = new File(configuration.outputDirectory(), configuration.pdfFileName());
             var pdfOutputStream = new FileOutputStream(pdfFile);
