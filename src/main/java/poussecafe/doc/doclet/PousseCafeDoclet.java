@@ -7,6 +7,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic.Kind;
+
 import jdk.javadoc.doclet.Doclet;
 import jdk.javadoc.doclet.DocletEnvironment;
 import jdk.javadoc.doclet.Reporter;
@@ -50,7 +52,8 @@ public class PousseCafeDoclet implements Doclet {
     @Override
     public void init(Locale locale,
             Reporter reporter) {
-        Logger.setRootDoc(reporter);
+        reporter.print(Kind.NOTE, "Setting reporter");
+        Logger.setReporter(reporter);
     }
 
     @Override

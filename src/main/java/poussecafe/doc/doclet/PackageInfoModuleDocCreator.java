@@ -15,7 +15,7 @@ public class PackageInfoModuleDocCreator implements Consumer<PackageElement> {
         if (moduleDocFactory.isModuleDoc(classDoc)) {
             Logger.warn("package-info based module definition is deprecated, use a module class instead for " + classDoc.getQualifiedName().toString());
             if(!moduleAlreadyDefined(classDoc)) {
-                Logger.debug("Adding module from package " + classDoc.getQualifiedName().toString());
+                Logger.info("Adding module from package " + classDoc.getQualifiedName().toString());
                 moduleDocCreation.addModuleDoc(classDoc);
             }
         }

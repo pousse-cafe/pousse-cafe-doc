@@ -5,10 +5,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 import javax.lang.model.element.TypeElement;
+
+import poussecafe.annotations.Ignore;
 import poussecafe.doc.annotations.AnnotationUtils;
 import poussecafe.doc.model.AnnotationsResolver;
 import poussecafe.doc.model.DocletAccess;
-import poussecafe.source.Ignore;
 
 public class ClassesAnalyzer {
 

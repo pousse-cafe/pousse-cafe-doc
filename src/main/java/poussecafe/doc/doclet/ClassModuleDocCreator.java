@@ -10,7 +10,7 @@ public class ClassModuleDocCreator implements Consumer<TypeElement> {
     @Override
     public void accept(TypeElement classDoc) {
         if (moduleDocFactory.isModuleDoc(classDoc)) {
-            Logger.debug("Adding module from class " + classDoc.getQualifiedName().toString());
+            Logger.info("Adding module from class " + classDoc.getQualifiedName().toString());
             moduleDocCreation.addModuleDoc(classDoc);
         }
     }

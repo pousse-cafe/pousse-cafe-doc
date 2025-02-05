@@ -2,9 +2,11 @@ package poussecafe.doc.model;
 
 import java.util.Optional;
 import javax.lang.model.element.Element;
+
+import poussecafe.annotations.ShortDescription;
+import poussecafe.annotations.Trivial;
 import poussecafe.doc.annotations.AnnotationUtils;
 import poussecafe.domain.Service;
-import poussecafe.source.Trivial;
 
 public class ComponentDocFactory implements Service {
 
@@ -19,7 +21,7 @@ public class ComponentDocFactory implements Service {
     }
 
     private Optional<String> shortDescription(Element doc) {
-        var shortAnnotation = AnnotationUtils.annotation(doc, poussecafe.source.ShortDescription.class);
+        var shortAnnotation = AnnotationUtils.annotation(doc, ShortDescription.class);
         if(shortAnnotation.isPresent()) {
             return Optional.of((String) AnnotationUtils.value(shortAnnotation.orElseThrow(), "value").orElseThrow().getValue());
         } else {

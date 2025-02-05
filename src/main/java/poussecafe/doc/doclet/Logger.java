@@ -10,11 +10,11 @@ public class Logger {
 
     }
 
-    public static void setRootDoc(Reporter rootDoc) {
-        Logger.rootDoc = rootDoc;
+    public static void setReporter(Reporter reporter) {
+        Logger.reporter = reporter;
     }
 
-    private static Reporter rootDoc;
+    private static Reporter reporter;
 
     public static void debug(String message, Object... args) {
         log(message, text -> reporter().print(Kind.OTHER, text), args);
@@ -33,10 +33,11 @@ public class Logger {
     }
 
     private static Reporter reporter() {
-        if(rootDoc == null) {
-            rootDoc = new Log4jReporter();
+        if(reporter == null) {
+            reporter = new Slf4jReporter();
+            info("No reporter set, falling back to SLF4J");
         }
-        return rootDoc;
+        return reporter;
     }
 
     private static void log(String message, Consumer<String> logger, Object...args) {

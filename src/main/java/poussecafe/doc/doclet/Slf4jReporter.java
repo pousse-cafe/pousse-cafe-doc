@@ -7,7 +7,7 @@ import jdk.javadoc.doclet.Reporter;
 import org.slf4j.LoggerFactory;
 
 
-public class Log4jReporter implements Reporter {
+public class Slf4jReporter implements Reporter {
 
     @Override
     public void print(Kind kind, String msg) {

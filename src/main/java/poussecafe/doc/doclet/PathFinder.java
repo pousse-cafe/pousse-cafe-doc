@@ -13,10 +13,10 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import jdk.javadoc.doclet.DocletEnvironment;
+import poussecafe.annotations.Ignore;
 import poussecafe.doc.annotations.AnnotationUtils;
 import poussecafe.doc.model.DocletAccess;
 import poussecafe.doc.model.DocletServices;
-import poussecafe.source.Ignore;
 
 public class PathFinder {
 
